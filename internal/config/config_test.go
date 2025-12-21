@@ -1,0 +1,240 @@
+package config
+
+import (
+	"os"
+	"testing"
+)
+
+func TestLoad(t *testing.T) {
+	tests := []struct {
+		name     string
+		envVariables  map[string]string
+		expected *Config
+	}{
+		{
+			name:    "no environment variables set",
+			envVariables: map[string]string{},
+			expected: &Config{
+				MediaPath:   "/mnt/RAID/qbit-data/downloads",
+				ManagerPath: "/mnt/RAID/torrent-manager",
+				LibraryPath: "/mnt/RAID/jelly/media",
+				DryRun:      true,
+			},
+		},
+		{
+			name: "all environment variables set",
+			envVariables: map[string]string{
+				"TORRENT_DOWNLOAD_PATH":  "/custom/downloads",
+				"TORRENT_MANAGER_PATH":   "/custom/manager",
+				"MEDIA_SERVER_PATH":      "/custom/media",
+				"TORRENT_MANAGER_DRY_RUN": "false",
+			},
+			expected: &Config{
+				MediaPath:   "/custom/downloads",
+				ManagerPath: "/custom/manager",
+				LibraryPath: "/custom/media",
+				DryRun:      false,
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			// Clear environment before each test
+			clearEnv()
+
+			// Set test environment variables
+			for key, value := range test.envVariables {
+				os.Setenv(key, value)
+			}
+
+			// Clean up after test
+			defer clearEnv()
+
+			cfg := Load()
+
+			if cfg.MediaPath != test.expected.MediaPath {
+				t.Errorf("MediaPath = %v, want %v", cfg.MediaPath, test.expected.MediaPath)
+			}
+			if cfg.ManagerPath != test.expected.ManagerPath {
+				t.Errorf("ManagerPath = %v, want %v", cfg.ManagerPath, test.expected.ManagerPath)
+			}
+			if cfg.LibraryPath != test.expected.LibraryPath {
+				t.Errorf("LibraryPath = %v, want %v", cfg.LibraryPath, test.expected.LibraryPath)
+			}
+			if cfg.DryRun != test.expected.DryRun {
+				t.Errorf("DryRun = %v, want %v", cfg.DryRun, test.expected.DryRun)
+			}
+		})
+	}
+}
+
+func TestGetEnv(t *testing.T) {
+	tests := []struct {
+		name			string
+		key 			string
+		defaultValue 	string
+		envValue   		string
+		expectedValue	string
+		setEnv     		bool
+	}{
+		{
+			name:			"env variable set to custom",
+			key:			"TEST_KEY",
+			defaultValue:	"default",
+			envValue:		"custom",
+			expectedValue:	"custom",
+			setEnv:			true,
+		},
+		{
+			name:			"env variable not set and default value is default",
+			key:			"TEST_KEY",
+			defaultValue:	"default",
+			envValue:		"not set",
+			expectedValue:	"default",
+			setEnv:			false,
+		},
+		{
+			name:			"env variable set to empty string",
+			key:			"TEST_KEY",
+			defaultValue:	"default",
+			envValue:		"",
+			expectedValue:	"default",
+			setEnv:			true,
+		},
+		{
+			name:			"env variable not set and default value is empty string",
+			key:			"TEST_KEY",
+			defaultValue:	"",
+			envValue:		"not set",
+			expectedValue:	"",
+			setEnv:			false,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			os.Unsetenv(test.key)
+
+			if test.setEnv {
+				os.Setenv(test.key, test.envValue)
+			}
+
+			result := getEnv(test.key, test.defaultValue)
+
+			if result != test.expectedValue {
+				t.Errorf("getEnv() = %v, want %v", result, test.expectedValue)
+			}
+		})
+	}
+}
+
+func clearEnv() {
+	os.Unsetenv("TORRENT_DOWNLOAD_PATH")
+	os.Unsetenv("TORRENT_MANAGER_PATH")
+	os.Unsetenv("MEDIA_SERVER_PATH")
+	os.Unsetenv("TORRENT_MANAGER_DRY_RUN")
+}
+
+/*
+
+
+func TestGetEnvBool(t *testing.T) {
+	tests := []struct {
+		name       string
+		key        string
+		defaultVal bool
+		envValue   string
+		setEnv     bool
+		expected   bool
+	}{
+		{
+			name:       "returns true when env is 'true'",
+			key:        "TEST_BOOL",
+			defaultVal: false,
+			envValue:   "true",
+			setEnv:     true,
+			expected:   true,
+		},
+		{
+			name:       "returns false when env is 'false'",
+			key:        "TEST_BOOL",
+			defaultVal: true,
+			envValue:   "false",
+			setEnv:     true,
+			expected:   false,
+		},
+		{
+			name:       "returns true when env is '1'",
+			key:        "TEST_BOOL",
+			defaultVal: false,
+			envValue:   "1",
+			setEnv:     true,
+			expected:   true,
+		},
+		{
+			name:       "returns false when env is '0'",
+			key:        "TEST_BOOL",
+			defaultVal: true,
+			envValue:   "0",
+			setEnv:     true,
+			expected:   false,
+		},
+		{
+			name:       "returns default when env not set",
+			key:        "TEST_BOOL",
+			defaultVal: true,
+			setEnv:     false,
+			expected:   true,
+		},
+		{
+			name:       "returns default when env is empty string",
+			key:        "TEST_BOOL",
+			defaultVal: false,
+			envValue:   "",
+			setEnv:     true,
+			expected:   false,
+		},
+		{
+			name:       "returns default when env is invalid bool",
+			key:        "TEST_BOOL",
+			defaultVal: true,
+			envValue:   "invalid",
+			setEnv:     true,
+			expected:   true,
+		},
+		{
+			name:       "handles 'TRUE' (uppercase)",
+			key:        "TEST_BOOL",
+			defaultVal: false,
+			envValue:   "TRUE",
+			setEnv:     true,
+			expected:   true,
+		},
+		{
+			name:       "handles 'False' (mixed case)",
+			key:        "TEST_BOOL",
+			defaultVal: true,
+			envValue:   "False",
+			setEnv:     true,
+			expected:   false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			os.Unsetenv(tt.key)
+			defer os.Unsetenv(tt.key)
+
+			if tt.setEnv {
+				os.Setenv(tt.key, tt.envValue)
+			}
+
+			result := getEnvBool(tt.key, tt.defaultVal)
+			if result != tt.expected {
+				t.Errorf("getEnvBool() = %v, want %v", result, tt.expected)
+			}
+		})
+	}
+}
+*/
