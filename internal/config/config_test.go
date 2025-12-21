@@ -129,112 +129,68 @@ func TestGetEnv(t *testing.T) {
 	}
 }
 
+func TestGetEnvBool(t *testing.T) {
+	tests := []struct {
+		name			string
+		key				string
+		defaultValue	bool
+		envValue   		string
+		expectedValue   bool
+		setEnv			bool
+	}{
+		{
+			name:			"env variable set to true",
+			key: 			"TEST_BOOL",
+			defaultValue:	false,
+			envValue:		"true",
+			expectedValue:	true,
+			setEnv:			true,
+		},
+		{
+			name:			"env variable set to false",
+			key: 			"TEST_BOOL",
+			defaultValue:	true,
+			envValue:		"false",
+			expectedValue:	false,
+			setEnv:			true,
+		},
+		{
+			name:			"env variable not set and default value true",
+			key: 			"TEST_BOOL",
+			defaultValue:	true,
+			envValue:		"false",
+			expectedValue:	true,
+			setEnv:			false,
+		},
+		{
+			name:			"env variable not set and default value false",
+			key: 			"TEST_BOOL",
+			defaultValue:	false,
+			envValue:		"true",
+			expectedValue:	false,
+			setEnv:			false,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			os.Unsetenv(test.key)
+
+			if test.setEnv {
+				os.Setenv(test.key, test.envValue)
+			}
+
+			result := getEnvBool(test.key, test.defaultValue)
+			if result != test.expectedValue {
+				t.Errorf("getEnvBool() = %v, want %v", result, test.expectedValue)
+			}
+		})
+	}
+}
+
 func clearEnv() {
 	os.Unsetenv("TORRENT_DOWNLOAD_PATH")
 	os.Unsetenv("TORRENT_MANAGER_PATH")
 	os.Unsetenv("MEDIA_SERVER_PATH")
 	os.Unsetenv("TORRENT_MANAGER_DRY_RUN")
 }
-
-/*
-
-
-func TestGetEnvBool(t *testing.T) {
-	tests := []struct {
-		name       string
-		key        string
-		defaultVal bool
-		envValue   string
-		setEnv     bool
-		expected   bool
-	}{
-		{
-			name:       "returns true when env is 'true'",
-			key:        "TEST_BOOL",
-			defaultVal: false,
-			envValue:   "true",
-			setEnv:     true,
-			expected:   true,
-		},
-		{
-			name:       "returns false when env is 'false'",
-			key:        "TEST_BOOL",
-			defaultVal: true,
-			envValue:   "false",
-			setEnv:     true,
-			expected:   false,
-		},
-		{
-			name:       "returns true when env is '1'",
-			key:        "TEST_BOOL",
-			defaultVal: false,
-			envValue:   "1",
-			setEnv:     true,
-			expected:   true,
-		},
-		{
-			name:       "returns false when env is '0'",
-			key:        "TEST_BOOL",
-			defaultVal: true,
-			envValue:   "0",
-			setEnv:     true,
-			expected:   false,
-		},
-		{
-			name:       "returns default when env not set",
-			key:        "TEST_BOOL",
-			defaultVal: true,
-			setEnv:     false,
-			expected:   true,
-		},
-		{
-			name:       "returns default when env is empty string",
-			key:        "TEST_BOOL",
-			defaultVal: false,
-			envValue:   "",
-			setEnv:     true,
-			expected:   false,
-		},
-		{
-			name:       "returns default when env is invalid bool",
-			key:        "TEST_BOOL",
-			defaultVal: true,
-			envValue:   "invalid",
-			setEnv:     true,
-			expected:   true,
-		},
-		{
-			name:       "handles 'TRUE' (uppercase)",
-			key:        "TEST_BOOL",
-			defaultVal: false,
-			envValue:   "TRUE",
-			setEnv:     true,
-			expected:   true,
-		},
-		{
-			name:       "handles 'False' (mixed case)",
-			key:        "TEST_BOOL",
-			defaultVal: true,
-			envValue:   "False",
-			setEnv:     true,
-			expected:   false,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			os.Unsetenv(tt.key)
-			defer os.Unsetenv(tt.key)
-
-			if tt.setEnv {
-				os.Setenv(tt.key, tt.envValue)
-			}
-
-			result := getEnvBool(tt.key, tt.defaultVal)
-			if result != tt.expected {
-				t.Errorf("getEnvBool() = %v, want %v", result, tt.expected)
-			}
-		})
-	}
-}
-*/
