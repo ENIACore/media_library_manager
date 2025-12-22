@@ -3,6 +3,7 @@ package config
 import (
     "os"
     "strconv"
+	"sync"
 )
 
 type Config struct {
@@ -13,14 +14,14 @@ type Config struct {
 }
 
 // Load reads configuration from environment variables with defaults
-func Load() *Config {
+var Load = sync.OnceValue(func() *Config {
     return &Config {
         MediaPath:		getEnv("TORRENT_DOWNLOAD_PATH", "/mnt/RAID/qbit-data/downloads"),
 		ManagerPath:	getEnv("TORRENT_MANAGER_PATH", "/mnt/RAID/torrent-manager"),
         LibraryPath:	getEnv("MEDIA_SERVER_PATH", "/mnt/RAID/jelly/media"),
         DryRun:			getEnvBool("TORRENT_MANAGER_DRY_RUN", true),
-    }
-}
+	}
+})
 
 func getEnv(key, defaultVal string) string {
     if value := os.Getenv(key); value != "" {

@@ -18,22 +18,6 @@ import (
 	`sync`
 )
 
-// File extensions
-var VideoExtensions = map[string]struct{}{
-	`MP4`:  {}, `MKV`: {}, `AVI`: {}, `MOV`: {}, `FLV`: {}, `WMV`: {}, `WEBM`: {}, `M4V`: {}, `TS`: {}, `M2TS`: {},
-	`MPG`:  {}, `MPEG`: {}, `VOB`: {}, `3GP`: {}, `OGV`: {}, `RMVB`: {}, `RM`: {}, `DIVX`: {}, `F4V`: {},
-}
-
-var SubtitleExtensions = map[string]struct{}{
-	`SRT`: {}, `ASS`: {}, `SSA`: {}, `SUB`: {}, `VTT`: {}, `SBV`: {}, `JSON`: {}, `SMI`: {}, `LRC`: {},
-	`PSB`: {}, `IDX`: {}, `USF`: {}, `TTML`: {},
-}
-
-var AudioExtensions = map[string]struct{}{
-	`MP3`: {}, `FLAC`: {}, `AAC`: {}, `OGG`: {}, `WMA`: {}, `M4A`: {}, `OPUS`: {}, `WAV`: {},
-	`APE`: {}, `WV`: {}, `DTS`: {}, `AC3`: {}, `MKA`: {},
-}
-
 // ResolutionPatterns maps resolution names to regex patterns (using regexp.MatchString with fullmatch behavior)
 var ResolutionPatterns = map[string][]string{
 	// Matches 8k, 4320, 4320P, 4320I, 7680X4320, FULLUHD
@@ -262,6 +246,22 @@ var ExtrasPatterns = []string{
 	`DOCUMENTARIES`,
 }
 
+// File extensions
+var VideoExtensionPatterns = []string{
+	`MP4`, `MKV`, `AVI`, `MOV`, `FLV`, `WMV`, `WEBM`, `M4V`, `TS`, `M2TS`,
+	`MPG`, `MPEG`, `VOB`, `3GP`, `OGV`, `RMVB`, `RM`, `DIVX`, `F4V`,
+}
+
+var SubtitleExtensionPatterns = []string{
+	`SRT`, `ASS`, `SSA`, `SUB`, `VTT`, `SBV`, `JSON`, `SMI`, `LRC`,
+	`PSB`, `IDX`, `USF`, `TTML`,
+}
+
+var AudioExtensionPatterns = []string{
+	`MP3`, `FLAC`, `AAC`, `OGG`, `WMA`, `M4A`, `OPUS`, `WAV`,
+	`APE`, `WV`, `DTS`, `AC3`, `MKA`,
+}
+
 var (
 	GetResolutionPatterns = sync.OnceValue(func() map[string][]*regexp.Regexp {
 		return compilePatternMap(ResolutionPatterns)
@@ -286,6 +286,15 @@ var (
 	})
 	GetExtrasPatterns = sync.OnceValue(func() []*regexp.Regexp {
 		return compilePatternSlice(ExtrasPatterns)
+	})
+	GetVideoExtensionPatterns = sync.OnceValue(func() []*regexp.Regexp {
+		return compilePatternSlice(AudioExtensionPatterns)
+	})
+	GetSubtitleExtensionPatterns = sync.OnceValue(func() []*regexp.Regexp {
+		return compilePatternSlice(SubtitleExtensionPatterns)
+	})
+	GetAudioExtensionPatterns = sync.OnceValue(func() []*regexp.Regexp {
+		return compilePatternSlice(AudioExtensionPatterns)
 	})
 )
 

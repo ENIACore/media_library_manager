@@ -1,11 +1,10 @@
 package main
 
 import (
-	"fmt"
-	"github.com/ENIACore/media_library_manager/internal/processor"
+	"github.com/ENIACore/media_library_manager/internal/logger"
 )
 
 func main() {
-	result := processor.Main("message")
-	fmt.Println(result)
+	logger := logger.GetLogger()
+	logger.Info("test here")
 }
