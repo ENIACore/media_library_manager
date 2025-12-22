@@ -14,7 +14,7 @@ type Config struct {
 
 // Load reads configuration from environment variables with defaults
 func Load() *Config {
-    return &Config{
+    return &Config {
         MediaPath:		getEnv("TORRENT_DOWNLOAD_PATH", "/mnt/RAID/qbit-data/downloads"),
 		ManagerPath:	getEnv("TORRENT_MANAGER_PATH", "/mnt/RAID/torrent-manager"),
         LibraryPath:	getEnv("MEDIA_SERVER_PATH", "/mnt/RAID/jelly/media"),
