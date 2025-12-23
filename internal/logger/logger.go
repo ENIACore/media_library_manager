@@ -12,14 +12,11 @@ import (
 	"github.com/ENIACore/media_library_manager/internal/config"
 )
 
-var getSessionTimestamp = sync.OnceValue(func() string {
-	return time.Now().Format("2006-01-02_15-04-05")
-})
+func formatTimestamp(now time.Time) string {
+	return now.Format("2006-01-02_15:04:05")
+}
 
-func getLogFile(filename string) io.Writer {
-	cfg := config.Load()
-
-	dirpath := filepath.Join(cfg.ManagerPath, "logs", getSessionTimestamp())
+func getFile(dirpath string, filename string) io.Writer {
 	err := os.MkdirAll(dirpath, 0755)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Warning: failed to create log directory: %v, using Stdout instead of log file %v", err, filename)
@@ -36,28 +33,12 @@ func getLogFile(filename string) io.Writer {
 
 }
 
+// Implements slog.Handler interface
 type multiHandler struct {
 	handlers []slog.Handler
 }
 
-var logger = sync.OnceValue(func() *slog.Logger {
-	cfg := config.Load()
-
-	debugFile := getLogFile("DEBUG.log")
-	infoFile := getLogFile("INFO.log")
-	warnFile := getLogFile("WARN.log")
-
-	handler := &multiHandler{
-		handlers: []slog.Handler{
-			slog.NewTextHandler(debugFile, &slog.HandlerOptions{Level: slog.LevelDebug}),
-			slog.NewTextHandler(infoFile, &slog.HandlerOptions{Level: slog.LevelInfo}),
-			slog.NewTextHandler(warnFile, &slog.HandlerOptions{Level: slog.LevelWarn}),
-		},
-	}
-
-	return slog.New(handler).With("dry-run", cfg.DryRun)
-})
-
+// Returns true if ANY handler accepts log
 func (h *multiHandler) Enabled(ctx context.Context, level slog.Level) bool {
 	for _, handler := range h.handlers {
 		if handler.Enabled(ctx, level) {
@@ -67,6 +48,7 @@ func (h *multiHandler) Enabled(ctx context.Context, level slog.Level) bool {
 	return false
 }
 
+// Re-runs Enabled to only call Handle on specific handlers
 func (h *multiHandler) Handle(ctx context.Context, r slog.Record) error {
 	for _, handler := range h.handlers {
 		if handler.Enabled(ctx, r.Level) {
@@ -78,6 +60,7 @@ func (h *multiHandler) Handle(ctx context.Context, r slog.Record) error {
 	return nil
 }
 
+// Adds WithAttrs to ALL handlers
 func (h *multiHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	handlers := make([]slog.Handler, len(h.handlers))
 	for i, handler := range h.handlers {
@@ -86,6 +69,7 @@ func (h *multiHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	return &multiHandler{handlers: handlers}
 }
 
+// Adds WithGroup to ALL handlers
 func (h *multiHandler) WithGroup(name string) slog.Handler {
 	handlers := make([]slog.Handler, len(h.handlers))
 	for i, handler := range h.handlers {
@@ -93,6 +77,30 @@ func (h *multiHandler) WithGroup(name string) slog.Handler {
 	}
 	return &multiHandler{handlers: handlers}
 }
+
+var getSessionTimestamp = sync.OnceValue(func() string {
+	return formatTimestamp(time.Now())
+})
+
+var logger = sync.OnceValue(func() *slog.Logger {
+	cfg := config.Load()
+	basepath := filepath.Join(cfg.ManagerPath, "logs", getSessionTimestamp())
+
+
+	debugFile := getFile(basepath, "DEBUG.log")
+	infoFile := getFile(basepath, "INFO.log")
+	warnFile := getFile(basepath, "WARN.log")
+
+	handler := &multiHandler{
+		handlers: []slog.Handler{
+			slog.NewTextHandler(debugFile, &slog.HandlerOptions{Level: slog.LevelDebug}),
+			slog.NewTextHandler(infoFile, &slog.HandlerOptions{Level: slog.LevelInfo}),
+			slog.NewTextHandler(warnFile, &slog.HandlerOptions{Level: slog.LevelWarn}),
+		},
+	}
+
+	return slog.New(handler).With("dry-run", cfg.DryRun)
+})
 
 func Debug(msg string, args ...any) { logger().Debug(msg, args...) }
 func Info(msg string, args ...any)  { logger().Info(msg, args...) }

@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestLoad(t *testing.T) {
+func TestNew(t *testing.T) {
 	tests := []struct {
 		name     string
 		envVariables  map[string]string
@@ -51,7 +51,7 @@ func TestLoad(t *testing.T) {
 			// Clean up after test
 			defer clearEnv()
 
-			cfg := Load()
+			cfg := New()
 
 			if cfg.MediaPath != test.expected.MediaPath {
 				t.Errorf("MediaPath = %v, want %v", cfg.MediaPath, test.expected.MediaPath)
