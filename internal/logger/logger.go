@@ -82,8 +82,7 @@ var getSessionTimestamp = sync.OnceValue(func() string {
 	return formatTimestamp(time.Now())
 })
 
-var logger = sync.OnceValue(func() *slog.Logger {
-	cfg := config.Load()
+func NewLogger(cfg *config.Config) *slog.Logger {
 	basepath := filepath.Join(cfg.ManagerPath, "logs", getSessionTimestamp())
 
 
@@ -100,9 +99,4 @@ var logger = sync.OnceValue(func() *slog.Logger {
 	}
 
 	return slog.New(handler).With("dry-run", cfg.DryRun)
-})
-
-func Debug(msg string, args ...any) { logger().Debug(msg, args...) }
-func Info(msg string, args ...any)  { logger().Info(msg, args...) }
-func Warn(msg string, args ...any)  { logger().Warn(msg, args...) }
-func Error(msg string, args ...any) { logger().Error(msg, args...) }
+}

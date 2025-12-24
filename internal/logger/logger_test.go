@@ -172,4 +172,7 @@ func TestWithAttrs(t *testing.T) {
 
 func TestWithGroup(t *testing.T) {
 }
+
+func TestNewLogger(t *testing.T) {
+}
 */
