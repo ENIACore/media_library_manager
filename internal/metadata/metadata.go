@@ -27,6 +27,6 @@ type PathMetadata struct {
 }
 
 type Metadata struct {
-	Media	*MediaMetadata
-	Path	*PathMetadata
+	Media	MediaMetadata
+	Path	PathMetadata
 }
