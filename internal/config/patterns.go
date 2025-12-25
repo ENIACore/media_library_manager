@@ -303,7 +303,8 @@ func compilePatternMap(patterns map[string][]string) map[string][]*regexp.Regexp
 	for key, patternList := range patterns {
 		compiled := make([]*regexp.Regexp, len(patternList))
 		for i, pattern := range patternList {
-			compiled[i] = regexp.MustCompile(`^` + pattern + `$`)
+			compiled[i] = regexp.MustCompile(pattern)
+			//compiled[i] = regexp.MustCompile(`^` + pattern + `$`)
 		}
 		result[key] = compiled
 	}
@@ -313,7 +314,7 @@ func compilePatternMap(patterns map[string][]string) map[string][]*regexp.Regexp
 func compilePatternSlice(patterns []string) []*regexp.Regexp {
 	result := make([]*regexp.Regexp, len(patterns))
 	for i, pattern := range patterns {
-		result[i] = regexp.MustCompile(`^` + pattern + `$`)
+		result[i] = regexp.MustCompile(pattern)
 	}
 	return result
 }

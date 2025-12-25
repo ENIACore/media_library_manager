@@ -1,0 +1,5 @@
+package extractor
+
+import (
+	"fmt"
+)
