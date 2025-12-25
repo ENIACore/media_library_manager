@@ -3,11 +3,9 @@ package extractor
 import (
 	"regexp"
 	"testing"
-	"log/slog"
 )
 
 func TestSanitizeName(t *testing.T) {
-	logger := slog.Default()
 	tests := []struct{
 		name		string
 		input		string
@@ -23,7 +21,7 @@ func TestSanitizeName(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			sanitizedName := sanitizeName(test.input, logger)
+			sanitizedName := sanitizeName(test.input)
 			if sanitizedName != test.expected {
 				t.Errorf("sanitizeName() = %v, want %v", sanitizedName, test.expected)
 			}

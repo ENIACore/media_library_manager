@@ -2,13 +2,10 @@ package extractor
 
 import (
 	"strings"
-	"log/slog"
 	"regexp"
 )
 
-func sanitizeName(name string, logger *slog.Logger) string {
-	log := logger.With("func", "sanitizeName")
-	log.Debug("processing filename", "name", name)
+func sanitizeName(name string) string {
 
 	name = strings.ToUpper(name)
 	name = strings.ReplaceAll(name, "'", "")
@@ -18,8 +15,6 @@ func sanitizeName(name string, logger *slog.Logger) string {
 	name = string(re.ReplaceAll([]byte(name), []byte(".")))
 
 	name = strings.Trim(name, " .")
-
-	log.Debug("returning sanitized name", "name", name)
 	return name
 }
 
