@@ -5,6 +5,6 @@ import (
 )
 
 
-func ExtractPath(name string) *metadata.PathMetadata {
+func extractPath(name string) *metadata.PathMetadata {
 	return nil
 }

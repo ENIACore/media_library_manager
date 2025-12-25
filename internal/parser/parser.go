@@ -3,7 +3,7 @@ package parser
 
 import (
 	"fmt"
-	"github.com/ENIACore/media_library_manager/internal/metadata"
+	//"github.com/ENIACore/media_library_manager/internal/metadata"
 	"path/filepath"
 	"io/fs"
 )
@@ -13,8 +13,6 @@ type Node struct {
 	parent		*Node
 	children	[]*Node
 
-	media		metadata.MediaMetadata
-	path		metadata.PathMetadata
 }
 
 func ParseTree(path string) *Node {

@@ -25,3 +25,8 @@ type PathMetadata struct {
 	ext				string
 	format			config.FormatType
 }
+
+type Metadata struct {
+	Media	*MediaMetadata
+	Path	*PathMetadata
+}

@@ -5,6 +5,6 @@ import (
 	//"fmt"
 )
 
-func ExtractMedia(name string) *metadata.MediaMetadata {
+func extractMedia(name string) *metadata.MediaMetadata {
 	return nil
 }
