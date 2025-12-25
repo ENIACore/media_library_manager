@@ -3,6 +3,7 @@ package extractor
 import (
 	"testing"
 	"log/slog"
+	"fmt"
 )
 
 func TestSanitizeName(t *testing.T) {
@@ -26,6 +27,22 @@ func TestSanitizeName(t *testing.T) {
 			if sanitizedName != test.expected {
 				t.Errorf("sanitizeName() = %v, want %v", sanitizedName, test.expected)
 			}
+		})
+	}
+}
+
+func TestMatchParts(t *testing.T) {
+	tests := []struct{
+		name	string
+	}{
+		{
+			name: "test",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+
 		})
 	}
 }
