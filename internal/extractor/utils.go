@@ -1,8 +1,8 @@
 package extractor
 
 import (
-	"log/slog"
 	"strings"
+	"log/slog"
 	"regexp"
 )
 
@@ -23,11 +23,20 @@ func sanitizeName(name string, logger *slog.Logger) string {
 	return name
 }
 
-// Used to match one or more FULL parts starting from the left
-/*
-func matchParts(parts []string, re *regexp.Regexp) string {
-	
+// matchSegments joins dot-separated segments and attempts a full regex match.
+// It joins only as many segments as needed based on the number of literal dots in the pattern. 
+// Returns the match slice (full match + capture groups) if the entire joined string matches, or nil otherwise.
+func matchSegments(segments []string, re *regexp.Regexp) []string {
 
-	return ""
+	// Determine how many segments to join based on dots in pattern
+    numDots := strings.Count(re.String(), `\.`)
+    end := min(numDots+1, len(segments))
+    
+    str := strings.Join(segments[:end], ".")
+    
+    if match := re.FindStringSubmatch(str); match != nil && match[0] == str {
+        return match
+    }
+    return nil
+
 }
-*/

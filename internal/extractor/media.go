@@ -1,5 +1,5 @@
 package extractor
 
 import (
-	"fmt"
+	//"fmt"
 )
