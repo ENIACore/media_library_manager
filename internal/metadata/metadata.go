@@ -19,9 +19,9 @@ type MediaMetadata struct {
 	language	string
 }
 
-type FileMetadata struct {
-	newPath			string
-	originalPath	string
+type PathMetadata struct {
+	dest			string
+	source			string
 	ext				string
 	format			config.FormatType
 }
