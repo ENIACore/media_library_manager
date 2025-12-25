@@ -1,4 +1,4 @@
-package config
+package metadata
 
 // NodeType represents the type of a filesystem node
 type NodeType string

@@ -11,7 +11,7 @@
 //   - SeasonsPatterns: List of patterns to match season identifiers with capture groups
 //   - EpisodesPatterns: List of patterns to match episode identifiers with capture groups
 //   - ExtrasPatterns: List of patterns to match extra content
-package config
+package patterns
 
 import (
 	`regexp`

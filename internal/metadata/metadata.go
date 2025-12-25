@@ -1,10 +1,5 @@
 package metadata
 
-import (
-	"github.com/ENIACore/media_library_manager/internal/config"
-)
-
-
 type MediaMetadata struct {
 	name		string
 	year		int
@@ -23,7 +18,7 @@ type PathMetadata struct {
 	dest			string
 	source			string
 	ext				string
-	format			config.FormatType
+	format			FormatType
 }
 
 type Metadata struct {

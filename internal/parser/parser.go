@@ -1,12 +1,11 @@
 package parser
 
 import (
-	"fmt"
-	//"github.com/ENIACore/media_library_manager/internal/metadata"
-	"io/fs"
+	"os"
 	"path/filepath"
-
 	"github.com/ENIACore/media_library_manager/internal/metadata"
+	"github.com/ENIACore/media_library_manager/internal/extractor"
+	"log/slog"
 )
 
 
@@ -17,17 +16,38 @@ type Node struct {
 	metadata.Metadata
 }
 
-func ParseTree(path string) *Node {
-	err := filepath.WalkDir(path, func(path string, d fs.DirEntry, err error) error {
-		fmt.Println("================")
-		fmt.Println("Path is, " + path)	
-		fmt.Printf("Name is, %v\n", d.Name())
-		fmt.Printf("IsDir is, %v\n", d.IsDir())
-		info, _ := d.Info()
-		fmt.Printf("Info is, %v\n", info.Name())
-		fmt.Println("================")
-		return err
-	})
-	fmt.Println(err)
-	return nil
+func ParseTree(path string, parent *Node) (*Node, error) {
+    info, err := os.Stat(path)
+    if err != nil {
+        return nil, err
+    }
+
+    node := &Node{
+        parent: parent,
+		children: nil,
+		Metadata:	extractor.Extract(path),
+    }
+	if !info.IsDir() {
+		return node, nil
+	}
+
+	entries, err := os.ReadDir(path)
+	if err != nil {
+		return nil, err
+	}
+
+	children := make([]*Node, 0, len(entries))
+	for _, entry := range entries {
+		childPath := filepath.Join(path, entry.Name())
+		child, err := ParseTree(childPath, node)
+		if err != nil {
+			return nil, err
+		}
+		if child != nil {
+			children = append(children, child)
+		}
+	}
+	node.children = children
+    
+    return node, nil
 }
