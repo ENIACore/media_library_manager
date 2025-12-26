@@ -1,7 +1,7 @@
 package metadata
 
 type MediaMetadata struct {
-	name		string
+	title		string
 	year		int
 	episode		int
 	season		int

@@ -50,4 +50,3 @@ func ParseTree(path string, parent *Node, logger *slog.Logger) (*Node, error) {
     
     return node, nil
 }
-
