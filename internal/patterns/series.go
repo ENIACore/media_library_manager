@@ -1,11 +1,10 @@
 package patterns
 
 import (
-	"regexp"
 	"sync"
 )
 
-var SeasonPatterns = []string{
+var SeasonPatterns = []Pattern{
 	// Matches S<number>
 	`S(\d+)`,
 	// Matches S.<number>
@@ -24,7 +23,7 @@ var SeasonPatterns = []string{
 	`S(\d+)E\d+`,
 }
 
-var EpisodePatterns = []string{
+var EpisodePatterns = []Pattern{
 	// Matches E<number>
 	`E(\d+)`,
 	// Matches E.<number>
@@ -50,10 +49,10 @@ var EpisodePatterns = []string{
 }
 
 var (
-	GetSeasonPatterns = sync.OnceValue(func() []*regexp.Regexp {
-		return compilePatternSlice(SeasonPatterns)
+	GetSeasonPatterns = sync.OnceValue(func() []*CompiledPattern {
+		return compilePatterns(SeasonPatterns)
 	})
-	GetEpisodePatterns = sync.OnceValue(func() []*regexp.Regexp {
-		return compilePatternSlice(EpisodePatterns)
+	GetEpisodePatterns = sync.OnceValue(func() []*CompiledPattern {
+		return compilePatterns(EpisodePatterns)
 	})
 )

@@ -5,29 +5,43 @@ import (
 	`sync`
 )
 
-var LanguagePatterns = map[string][]string{
-    `ENGLISH`: { `ENGLISH`, `ENG`, `EN`, },
-    `SPANISH`: { `SPANISH`, `CASTELLANO`, `SPA`, `ES`, `ESPAÑOL`, },
-    `FRENCH`: { `FRENCH`, `FRA`, `FR`, },
-    `GERMAN`: { `GERMAN`, `DEUTSCH`, `GER`, `DE`, `GERMAN`, },
-    `ITALIAN`: { `ITALIAN`, `ITA`, `IT`, `ITALIANO`, },
-    `PORTUGUESE`: { `PORTUGUESE`, `PORTUGUES`, `POR`, `PT`, },
-    `BRAZILIAN_PORTUGUESE`: { `BRAZILIAN`, `BRAZIL`, `BR`, `PORTUGUESE.BR`, `PT.BR`, },
-    `RUSSIAN`: { `RUSSIAN`, `RUS`, `RU`, },
-    `JAPANESE`: { `JAPANESE`, `JAP`, `JPN`, `JP`, `JA`, },
-    `KOREAN`: { `KOREAN`, `KOR`, `KO`, `KR`, },
-    `ARABIC`: { `ARABIC`, `ARA`, `AR`, },
-    `HEBREW`: { `HEBREW`, `HEB`, `HE`, },
-    `THAI`: { `THAI`, `THA`, `TH`, },
-    `TURKISH`: { `TURKISH`, `TUR`, `TR`, },
-    `GREEK`: { `GREEK`, `GRE`, `EL`, },
-    `POLISH`: { `POLISH`, `POL`, `PL`, `POLSKI`, },
-    `HUNGARIAN`: { `HUNGARIAN`, `HUN`, `HU`, `MAGYAR`, },
-    `CZECH`: { `CZECH`, `CZE`, `CS`, },
-    `CHINESE`: { `CHINESE`, `CHI`, `ZH`, },
+type Pattern string
+
+type CompiledPattern regexp.Regexp
+
+type PatternGroup struct {
+	Key			string
+	Patterns	[]Pattern	
 }
 
-var ExtrasPatterns = []string{
+type CompiledPatternGroup struct {
+	Key			string
+	Patterns	[]*CompiledPattern
+}
+
+var LanguagePatternGroups = []PatternGroup{
+	{Key: `ENGLISH`, Patterns: []Pattern{ `ENGLISH`, `ENG`, `EN`, }},
+	{Key: `SPANISH`, Patterns: []Pattern{ `SPANISH`, `CASTELLANO`, `SPA`, `ES`, `ESPAÑOL`, }},
+	{Key: `FRENCH`, Patterns: []Pattern{ `FRENCH`, `FRA`, `FR`, }},
+	{Key: `GERMAN`, Patterns: []Pattern{ `GERMAN`, `DEUTSCH`, `GER`, `DE`, `GERMAN`, }},
+	{Key: `ITALIAN`, Patterns: []Pattern{ `ITALIAN`, `ITA`, `IT`, `ITALIANO`, }},
+	{Key: `PORTUGUESE`, Patterns: []Pattern{ `PORTUGUESE`, `PORTUGUES`, `POR`, `PT`, }},
+	{Key: `BRAZILIAN_PORTUGUESE`, Patterns: []Pattern{ `BRAZILIAN`, `BRAZIL`, `BR`, `PORTUGUESE.BR`, `PT.BR`, }},
+	{Key: `RUSSIAN`, Patterns: []Pattern{ `RUSSIAN`, `RUS`, `RU`, }},
+	{Key: `JAPANESE`, Patterns: []Pattern{ `JAPANESE`, `JAP`, `JPN`, `JP`, `JA`, }},
+	{Key: `KOREAN`, Patterns: []Pattern{ `KOREAN`, `KOR`, `KO`, `KR`, }},
+	{Key: `ARABIC`, Patterns: []Pattern{ `ARABIC`, `ARA`, `AR`, }},
+	{Key: `HEBREW`, Patterns: []Pattern{ `HEBREW`, `HEB`, `HE`, }},
+	{Key: `THAI`, Patterns: []Pattern{ `THAI`, `THA`, `TH`, }},
+	{Key: `TURKISH`, Patterns: []Pattern{ `TURKISH`, `TUR`, `TR`, }},
+	{Key: `GREEK`, Patterns: []Pattern{ `GREEK`, `GRE`, `EL`, }},
+	{Key: `POLISH`, Patterns: []Pattern{ `POLISH`, `POL`, `PL`, `POLSKI`, }},
+	{Key: `HUNGARIAN`, Patterns: []Pattern{ `HUNGARIAN`, `HUN`, `HU`, `MAGYAR`, }},
+	{Key: `CZECH`, Patterns: []Pattern{ `CZECH`, `CZE`, `CS`, }},
+	{Key: `CHINESE`, Patterns: []Pattern{ `CHINESE`, `CHI`, `ZH`, }},
+}
+
+var ExtrasPatterns = []Pattern{
 	`EXTRA[S]?`,
 	`FEATURETTE[S]?`,
 	`BEHIND\.THE\.SCENE[S]?`,
@@ -41,31 +55,33 @@ var ExtrasPatterns = []string{
 }
 
 var (
-	GetLanguagePatterns = sync.OnceValue(func() map[string][]*regexp.Regexp {
-		return compilePatternMap(LanguagePatterns)
+	GetLanguagePatternGroups = sync.OnceValue(func() []CompiledPatternGroup {
+		return compilePatternGroups(LanguagePatternGroups)
 	})
-	GetExtrasPatterns = sync.OnceValue(func() []*regexp.Regexp {
-		return compilePatternSlice(ExtrasPatterns)
+	GetExtrasPatterns = sync.OnceValue(func() []*CompiledPattern {
+		return compilePatterns(ExtrasPatterns)
 	})
 )
 
-func compilePatternMap(patterns map[string][]string) map[string][]*regexp.Regexp {
-	result := make(map[string][]*regexp.Regexp, len(patterns))
-	for key, patternList := range patterns {
-		compiled := make([]*regexp.Regexp, len(patternList))
-		for i, pattern := range patternList {
-			compiled[i] = regexp.MustCompile(pattern)
-			//compiled[i] = regexp.MustCompile(`^` + pattern + `$`)
+func compilePatternGroups(patternGroups []PatternGroup) []CompiledPatternGroup {
+	res := make([]CompiledPatternGroup, len(patternGroups))
+	for i, group := range patternGroups {
+		patterns := make([]*CompiledPattern, len(group.Patterns))
+		for j, pattern := range group.Patterns {
+			patterns[j] = (*CompiledPattern)(regexp.MustCompile(string(pattern)))
 		}
-		result[key] = compiled
+		res[i] = CompiledPatternGroup{
+			Key: 		group.Key,
+			Patterns: 	patterns,
+		}
 	}
-	return result
+	return res
 }
 
-func compilePatternSlice(patterns []string) []*regexp.Regexp {
-	result := make([]*regexp.Regexp, len(patterns))
+func compilePatterns(patterns []Pattern) []*CompiledPattern {
+	result := make([]*CompiledPattern, len(patterns))
 	for i, pattern := range patterns {
-		result[i] = regexp.MustCompile(pattern)
+		result[i] = (*CompiledPattern)(regexp.MustCompile(string(pattern)))
 	}
 	return result
 }

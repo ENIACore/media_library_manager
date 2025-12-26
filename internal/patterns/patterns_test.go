@@ -1,41 +1,42 @@
 package patterns
 
 import (
+	"regexp"
 	"testing"
 )
 
-func TestCompilePatternMap(t *testing.T) {
+func TestCompilePatternGroups(t *testing.T) {
 	tests := []struct {
 		name		string
-		patterns	map[string][]string
+		patterns	[]PatternGroup
 		expectedLen	int
 	}{
 		{
 			name: "input 0 patterns",
-			patterns: map[string][]string{},
+			patterns: []PatternGroup{},
 			expectedLen: 0,
 		},
 		{
 			name: "input 1 patterns",
-			patterns: map[string][]string{
-				"pattern1": { "pattern1" },
+			patterns: []PatternGroup{
+				{ Key: "pattern1", Patterns: []Pattern{ "pattern1" }},
 			},
 			expectedLen: 1,
 		},
 		{
 			name: "input 2 patterns",
-			patterns: map[string][]string{
-				"pattern1": { "pattern1" },
-				"pattern2": { "pattern2" },
+			patterns: []PatternGroup{
+				{ Key: "pattern1", Patterns: []Pattern{ "pattern1" }},
+				{ Key: "pattern2", Patterns: []Pattern{ "pattern2" }},
 			},
 			expectedLen: 2,
 		},
 		{
 			name: "input 3 patterns",
-			patterns: map[string][]string{
-				"pattern1": { "pattern1" },
-				"pattern2": { "pattern2" },
-				"pattern3": { "pattern3" },
+			patterns: []PatternGroup{
+				{ Key: "pattern1", Patterns: []Pattern{ "pattern1" }},
+				{ Key: "pattern2", Patterns: []Pattern{ "pattern2" }},
+				{ Key: "pattern3", Patterns: []Pattern{ "pattern3" }},
 			},
 			expectedLen: 3,
 		},
@@ -43,13 +44,13 @@ func TestCompilePatternMap(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			compiledPatterns := compilePatternMap(test.patterns)
-			compiledPatternsLen := len(compiledPatterns)
+			compiledPatternGroups := compilePatternGroups(test.patterns)
+			compiledPatternsLen := len(compiledPatternGroups)
 
-			for key, patterns := range compiledPatterns {
-				for _, pattern := range patterns {
-					if !pattern.MatchString(key) {
-						t.Errorf("MatchString() for %v inside %v false, want true", key, pattern)
+			for _, group := range compiledPatternGroups {
+				for _, pattern := range group.Patterns {
+					if !(*regexp.Regexp)(pattern).MatchString(group.Key) {
+						t.Errorf("MatchString() for %v inside %v false, want true", group.Key, pattern)
 					}
 				}
 			}
@@ -62,28 +63,28 @@ func TestCompilePatternMap(t *testing.T) {
 }
 
 
-func TestCompilePatternSlice(t *testing.T) {
+func TestCompilePatterns(t *testing.T) {
 	tests := []struct {
 		name		string
-		patterns	[]string
+		patterns	[]Pattern
 		expectedLen	int
 	}{
 		{
 			name: "input 0 patterns",	
-			patterns: []string {
+			patterns: []Pattern {
 			},
 			expectedLen: 0,
 		},
 		{
 			name: "input 1 patterns",	
-			patterns: []string {
+			patterns: []Pattern {
 				"pattern1",
 			},
 			expectedLen: 1,
 		},
 		{
 			name: "input 2 patterns",	
-			patterns: []string {
+			patterns: []Pattern {
 				"pattern1",
 				"pattern2",
 			},
@@ -91,7 +92,7 @@ func TestCompilePatternSlice(t *testing.T) {
 		},
 		{
 			name: "input 3 patterns",	
-			patterns: []string {
+			patterns: []Pattern {
 				"pattern1",
 				"pattern2",
 				"pattern3",
@@ -101,18 +102,20 @@ func TestCompilePatternSlice(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		compiledPatterns := compilePatternSlice(test.patterns)
-		compiledPatternsLen := len(compiledPatterns)
+		t.Run(test.name, func(t *testing.T) {
+			compiledPatterns := compilePatterns(test.patterns)
+			compiledPatternsLen := len(compiledPatterns)
 
-		for i, pattern := range compiledPatterns {
-			if !pattern.MatchString(test.patterns[i]) {
-				t.Errorf("MatchString() for %v inside %v false, want true", test.patterns[i], pattern)
+			for i, pattern := range compiledPatterns {
+				if !(*regexp.Regexp)(pattern).MatchString(string(test.patterns[i])) {
+					t.Errorf("MatchString() for %v inside %v false, want true", test.patterns[i], pattern)
+				}
 			}
-		}
 
-		if compiledPatternsLen != test.expectedLen {
-			t.Errorf("compilePatternMap() len = %v, want %v", compiledPatternsLen, test.expectedLen)
-		}
+			if compiledPatternsLen != test.expectedLen {
+				t.Errorf("compilePatternMap() len = %v, want %v", compiledPatternsLen, test.expectedLen)
+			}
+		})
 	}
 
 }

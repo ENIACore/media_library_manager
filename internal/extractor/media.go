@@ -1,7 +1,7 @@
+//TODO: Make patterns return in order of specificity
 package extractor
 
 import (
-	"fmt"
 	"log/slog"
 	//"path/filepath"
 	"strconv"
@@ -25,9 +25,9 @@ func extractTitle(segments []string, logger *slog.Logger) string {
 	for i, segment := range segments {
 		candidates := segments[i:] 
 
-		_, err := parseYear(segment)
+		year := parseYear(segment)
 		// Valid year, skip
-		if err != nil {
+		if year != -1 {
 			continue
 		}
 
@@ -98,19 +98,42 @@ func parseAudio(segments []string) string {
 	return ""
 }
 
-func parseYear(s string) (int, error) {
+// Returns -1 for invalid year, otherwise returns year
+func parseYear(s string) int {
 	if len(s) != 4 {
-		return 0, fmt.Errorf("expected year with len 4, got len %v", len(s)) 
+		return -1
 	}
 
 	year, err := strconv.Atoi(s)	
 	if err != nil {
-		return 0, fmt.Errorf("invalid year, %w", err)
+		return -1
 	}
 
 	if year < 1930 || year > time.Now().Year() {
-		return 0, fmt.Errorf("invalid year, value %v is less than 1930 and greater than current year", year)	
+		return -1
 	}
 
-	return year, nil
+	return year
+}
+
+
+// Returns -1 for SEASON pattern not matched, 0 for match without number, > 0 for season number
+func parseSeason(segments []string) int {
+	for _, re := range patterns.GetSeasonPatterns() {
+		match := matchSegments(segments, re)
+
+		if match == nil {
+			continue
+		}
+		if len(match) == 1 {
+			return 0	
+		}
+
+		if season, err := strconv.Atoi(match[1]); err == nil {
+			return season
+		}
+		return 0 // matched but couldn't parse number
+		
+	}
+	return -1
 }
