@@ -1,8 +1,9 @@
-//TODO: Make patterns return in order of specificity
+// TODO: Make patterns return in order of specificity
 package extractor
 
 import (
 	"log/slog"
+	"regexp"
 	//"path/filepath"
 	"strconv"
 	"strings"
@@ -52,10 +53,10 @@ func extractTitle(segments []string, logger *slog.Logger) string {
 
 // Helper function to return resolution if left most segments are a resolution or empty string if not
 func parseResolution(segments []string) string {
-	for key, regexps := range patterns.GetResolutionPatterns() {
-		for _, re := range regexps {
-			if matchSegments(segments, re) != nil {
-				return key
+	for _, group := range patterns.GetResolutionPatternGroups() {
+		for _, re := range group.Patterns {
+			if matchSegments(segments, (*regexp.Regexp)(re)) != nil {
+				return group.Key
 			}
 		}
 	}
@@ -64,10 +65,10 @@ func parseResolution(segments []string) string {
 
 // Helper function to return codec if left most segments are a codec or empty string if not
 func parseCodec(segments []string) string {
-	for key, regexps := range patterns.GetCodecPatterns() {
-		for _, re := range regexps {
-			if matchSegments(segments, re) != nil {
-				return key
+	for _, group := range patterns.GetCodecPatternGroups() {
+		for _, re := range group.Patterns {
+			if matchSegments(segments, (*regexp.Regexp)(re)) != nil {
+				return group.Key
 			}
 		}
 	}
@@ -76,10 +77,10 @@ func parseCodec(segments []string) string {
 
 // Helper function to return media source if left most segments are a media source or empty string if not
 func parseSource(segments []string) string {
-	for key, regexps := range patterns.GetSourcePatterns() {
-		for _, re := range regexps {
-			if matchSegments(segments, re) != nil {
-				return key
+	for _, group := range patterns.GetSourcePatternGroups() {
+		for _, re := range group.Patterns {
+			if matchSegments(segments, (*regexp.Regexp)(re)) != nil {
+				return group.Key
 			}
 		}
 	}
@@ -88,10 +89,10 @@ func parseSource(segments []string) string {
 
 // Helper function to return audio if left most segments are a audio or empty string if not
 func parseAudio(segments []string) string {
-	for key, regexps := range patterns.GetAudioPatterns() {
-		for _, re := range regexps {
-			if matchSegments(segments, re) != nil {
-				return key
+	for _, group := range patterns.GetAudioPatternGroups() {
+		for _, re := range group.Patterns {
+			if matchSegments(segments, (*regexp.Regexp)(re)) != nil {
+				return group.Key
 			}
 		}
 	}
@@ -120,7 +121,7 @@ func parseYear(s string) int {
 // Returns -1 for SEASON pattern not matched, 0 for match without number, > 0 for season number
 func parseSeason(segments []string) int {
 	for _, re := range patterns.GetSeasonPatterns() {
-		match := matchSegments(segments, re)
+		match := matchSegments(segments, (*regexp.Regexp)(re))
 
 		if match == nil {
 			continue
