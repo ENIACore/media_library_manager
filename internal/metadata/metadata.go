@@ -1,24 +1,24 @@
 package metadata
 
 type MediaMetadata struct {
-	title		string
-	year		int
-	episode		int
-	season		int
+	Title		string
+	Year		int
+	Episode		int
+	Season		int
 
-	resolution	string
-	codec		string
-	source		string
-	audio		string
+	Resolution	string
+	Codec		string
+	Source		string
+	Audio		string
 
-	language	string
+	Language	string
 }
 
 type PathMetadata struct {
-	dest			string
-	source			string
-	ext				string
-	format			FormatType
+	Dest			string
+	Source			string
+	Ext				string
+	Format			FormatType
 }
 
 type Metadata struct {
