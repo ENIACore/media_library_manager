@@ -19,6 +19,112 @@ type CompiledPatternGroup struct {
 	Patterns	[]*CompiledPattern
 }
 
+// Un-useful metadata of file pertaining to typical patterns found in torrent files
+var MiscPatterns = []Pattern{
+	// === UNUSED QUALITY INDICATORS ===
+	// HDR variants
+	`HDR`, `HDR10`, `HDR10PLUS`, `HDR10\+`, `DOLBY\.VISION`, `DOLBYVISION`, `DV`, `HLG`,
+	// Bit depth
+	`10BIT`, `10\.BIT`, `8BIT`, `8\.BIT`, `12BIT`, `12\.BIT`,
+	// Color
+	`SDR`,
+
+	// === EDITION / VERSION ===
+	`REMASTERED`, `REMASTER`,
+	`EXTENDED`, `EXTENDED\.CUT`, `EXTENDED\.EDITION`,
+	`UNRATED`,
+	`UNCUT`,
+	`DIRECTORS\.CUT`, `DC`,
+	`THEATRICAL`, `THEATRICAL\.CUT`,
+	`CRITERION`, `CC`,
+	`SPECIAL\.EDITION`, `SE`,
+	`ANNIVERSARY`, `ANNIVERSARY\.EDITION`,
+	`COLLECTORS`, `COLLECTORS\.EDITION`, `CE`,
+	`LIMITED`, `LIMITED\.EDITION`,
+	`PROPER`,
+	`REPACK`, `RERIP`,
+	`REAL`,
+	`RETAIL`,
+	`FINAL\.CUT`,
+	`IMAX`,
+	`OPEN\.MATTE`, `OPENMATTE`,
+	`3D`, `HSBS`, `HOU`, `HALF\.SBS`, `FULL\.SBS`,
+
+	// === RELEASE INFO ===
+	`INTERNAL`, `INT`,
+	`NFO`, `NFOFIX`,
+	`SAMPLE`,
+	`PROOF`,
+	`READNFO`, `READ\.NFO`,
+	`DIRFIX`,
+	`NFOFIX`,
+	`SYNCFIX`,
+	`SAMPLEFIX`,
+	`SUBBED`, `SUBS`, `SUB`,
+	`DUBBED`, `DUB`,
+	`HARDCODED`, `HC`,
+	`MULTISUBS`, `MULTI\.SUBS`, `MULTISUB`,
+	`MULTI`, `MULTILANG`, `MULTI\.LANG`, `MULTi`,
+
+	// === SCENE / P2P RELEASE GROUPS ===
+	`YIFY`, `YTS`, `YTS\.MX`, `YTS\.AM`, `YTS\.LT`, `YTS\.AG`,
+	`RARBG`,
+	`ETRG`, `ETTV`, `ETHD`,
+	`PSA`, `PSARIPS`,
+	`GALAXYRG`, `GALAXY\.RG`, `GALAXYTV`,
+	`SPARKS`,
+	`GECKOS`,
+	`AMIABLE`,
+	`DRONES`,
+	`FGT`,
+	`EVO`,
+	`CMRG`,
+	`TIGOLE`, `QXRTRIGOLE`,
+	`FLUX`,
+	`NTG`,
+	`EPSILON`,
+	`PLAYNOW`,
+	`HDETG`,
+	`DIMENSION`,
+	`LOL`,
+	`KILLERS`,
+	`AVS`,
+	`SVA`,
+	`FLEET`,
+	`NTEB`,
+	`PAHE`, `PAHE\.IN`, `PAHE\.PH`,
+	`MKVKING`,
+	`ION10`,
+	`AMZN`,
+	`NF`,
+	`HULU`,
+	`DSNP`,
+	`ATVP`,
+	`PCOK`,
+	`HMAX`, `HBO`,
+	`MAX`,
+	`PMTP`,
+	`CRAV`,
+	`SHO`,
+	`STAN`,
+	`CRITERION`,
+
+	// === TV SPECIFIC ===
+	`COMPLETE`, `COMPLETE\.SERIES`,
+	`MINISERIES`, `MINI\.SERIES`,
+	`PILOT`,
+	`FINALE`,
+	`HDTV`,
+
+	// === MISC NOISE ===
+	`XXX`,
+	`HINDI\.DUBBED`, `TAMIL\.DUBBED`, `TELUGU\.DUBBED`,
+	`CONVERT`,
+	`COLORIZED`,
+	`RESTORED`,
+	`AI\.UPSCALE`, `UPSCALED`, `AI\.ENHANCED`,
+}
+
 var LanguagePatternGroups = []PatternGroup{
 	{Key: `ENGLISH`, Patterns: []Pattern{ `ENGLISH`, `ENG`, `EN`, }},
 	{Key: `SPANISH`, Patterns: []Pattern{ `SPANISH`, `CASTELLANO`, `SPA`, `ES`, `ESPAÑOL`, }},
@@ -60,6 +166,9 @@ var (
 	})
 	GetExtrasPatterns = sync.OnceValue(func() []*CompiledPattern {
 		return compilePatterns(ExtrasPatterns)
+	})
+	GetMiscPatterns = sync.OnceValue(func() []*CompiledPattern {
+		return compilePatterns(MiscPatterns)
 	})
 )
 

@@ -10,6 +10,7 @@ import (
 
 // Returns title starting from left most segment
 // Extracts using segment order:
+//		-	<title>.<year (optional)>.<misc pattern>...
 //		-	<title>.<year (optional)>.<resolution, codec, source, or audio>...
 //		-	<title>.<year (optional)>.<season or ep>...
 //		-	<title>.<year (optional)>.<file ext>
@@ -27,6 +28,7 @@ func extractTitle(segments []string) []string {
 			parseEpisode(candidates) > -1 		||
 			parseVideoExt(candidates) != "" 	||
 			parseSubtitleExt(candidates) != "" 	||
+			parseMisc(candidates) != "" 	||
 			parseAudioExt(candidates) != "" {
 			break
 		}
@@ -45,6 +47,7 @@ func extractTitle(segments []string) []string {
 
 // Returns year and -1 for no year found
 // Extracts using segment order:
+//		- <...>.<year (optional)>.<misc pattern>...
 //		- <...>.<year (optional)>.<resolution, codec, source, or audio>...
 //		- <...>.<year (optional)>.<season or ep>...
 //		- <...>.<year (optional)>.<file ext>...
@@ -62,6 +65,7 @@ func extractYear(segments []string) int {
 			parseEpisode(candidates) > -1 		||
 			parseVideoExt(candidates) != "" 	||
 			parseSubtitleExt(candidates) != "" 	||
+			parseMisc(candidates) != "" 	||
 			parseAudioExt(candidates) != "" {
 			return year
 		}
@@ -299,6 +303,15 @@ func parseLanguage(segments []string) string {
 			if match != nil {
 				return group.Key
 			}
+		}
+	}
+	return ""
+}
+
+func parseMisc(segments []string) string {
+	for _, re := range patterns.GetMiscPatterns() {
+		if match := matchSegments(segments, (*regexp.Regexp)(re)); match != nil {
+			return match[0]
 		}
 	}
 	return ""

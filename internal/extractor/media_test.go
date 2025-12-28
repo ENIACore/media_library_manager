@@ -13,6 +13,20 @@ func TestExtractTitle(t *testing.T) {
 		expectedIdx		int
 	}{
 		{
+			name: 		"format <title>.<year (optional)>.<misc pattern>",
+			input:		[]string{
+				"MOVIE",
+				"TITLE",
+				"2020",
+				"UNRATED",
+				"1080P",
+			},
+			expectedTitle: []string{
+				"MOVIE",
+				"TITLE",
+			},
+		},
+		{
 			name: 		"format <title>.<year (optional)>.<resolution, codec, source, or audio>",
 			input:		[]string{
 				"MOVIE",
@@ -158,8 +172,18 @@ func TestExtractYear(t *testing.T) {
 		name			string
 		input			[]string
 		expectedYear	int
-		expectedIdx		int
 	}{
+		{
+			name: 		"format <title>.<year (optional)>.<misc pattern>",
+			input:		[]string{
+				"MOVIE",
+				"TITLE",
+				"2020",
+				"UNRATED",
+				"1080P",
+			},
+			expectedYear: 2020,
+		},
 		{
 			name: "successful <...>.<year (optional)>.<resolution, codec, source, or audio>",
 			input:	[]string{
