@@ -2,53 +2,154 @@
 package extractor
 
 import (
-	"log/slog"
 	"regexp"
-	//"path/filepath"
 	"strconv"
-	"strings"
 	"time"
-
 	"github.com/ENIACore/media_library_manager/internal/patterns"
-	//"github.com/ENIACore/media_library_manager/internal/patterns"
 )
 
-// Extracts movie or series title from file or directory
-// Extracts using these expected patterns:
+// Returns title starting from left most segment
+// Extracts using segment order:
 //		-	<title>.<year (optional)>.<resolution, codec, source, or audio>...
 //		-	<title>.<year (optional)>.<season or ep>...
 //		-	<title>.<year (optional)>.<file ext>
 //		-	<title>.<year (optional)>
-func extractTitle(segments []string, logger *slog.Logger) string {
-	//log := logger.With("func", "extractTitle")
-
-	var sb strings.Builder
+func extractTitle(segments []string) []string {
+	var title []string
+	year := -1
 	for i, segment := range segments {
-		candidates := segments[i:] 
+		candidates := segments[i:]
+		if	parseResolution(candidates) != "" 	||
+			parseCodec(candidates) != ""		||
+			parseSource(candidates) != "" 		||
+			parseAudio(candidates) != "" 		||
+			parseSeason(candidates) > -1 		||
+			parseEpisode(candidates) > -1 		||
+			parseVideoExt(candidates) != "" 	||
+			parseSubtitleExt(candidates) != "" 	||
+			parseAudioExt(candidates) != "" {
+			break
+		}
 
-		year := parseYear(segment)
-		// Valid year, skip
 		if year != -1 {
-			continue
+			title = append(title, strconv.Itoa(year))
+			year = -1
 		}
-
-		if parseResolution(candidates) != "" {
-			break
-		} 
-		if parseCodec(candidates) != "" {
-			break
+		if year = parseYear(segment); year == -1 {
+			title = append(title, segment)
 		}
-		if parseSource(candidates) != "" {
-			break
-		}
-		if parseAudio(candidates) != "" {
-			break
-		}
-
 
 	}
+	return title
+}
 
-	return sb.String()
+// Returns year and -1 for no year found
+// Extracts using segment order:
+//		- <...>.<year (optional)>.<resolution, codec, source, or audio>...
+//		- <...>.<year (optional)>.<season or ep>...
+//		- <...>.<year (optional)>.<file ext>...
+//		- <...>.<year (optional)>
+func extractYear(segments []string) int {
+	year := -1
+	for i, segment := range segments {
+
+		candidates := segments[i:]
+		if	parseResolution(candidates) != "" 	||
+			parseCodec(candidates) != ""		||
+			parseSource(candidates) != "" 		||
+			parseAudio(candidates) != "" 		||
+			parseSeason(candidates) > -1 		||
+			parseEpisode(candidates) > -1 		||
+			parseVideoExt(candidates) != "" 	||
+			parseSubtitleExt(candidates) != "" 	||
+			parseAudioExt(candidates) != "" {
+			return year
+		}
+		year = parseYear(segment)
+	}
+	return year
+}
+
+// Returns -1 for no season pattern, 0 for season without number, 0 > for season number found
+// Extracts without using expected segment order
+func extractSeason(segments []string) int {
+	for i := range segments {
+		candidates := segments[i:]
+		if season := parseSeason(candidates); season > -1 {
+			return season
+		}
+	}
+	return -1	
+}
+
+// Returns -1 for no episode pattern, 0 for episode without number, 0 > for episode number found
+// Extracts without using expected segment order
+func extractEpisode(segments []string) int {
+	for i := range segments {
+		candidates := segments[i:]
+		if ep := parseEpisode(candidates); ep > -1 {
+			return ep
+		}
+	}
+	return -1	
+}
+
+// Returns resolution pattern or "" for no resolution pattern
+// Extracts without using expected segment order
+func extractResolution(segments []string) string {
+	for i := range segments {
+		candidates := segments[i:]
+		if res := parseResolution(candidates); res != "" {
+			return res
+		}
+	}
+	return ""
+}
+
+// Returns codec pattern or "" for no codec pattern
+// Extracts without using expected segment order
+func extractCodec(segments []string) string {
+	for i := range segments {
+		candidates := segments[i:]
+		if res := parseCodec(candidates); res != "" {
+			return res
+		}
+	}
+	return ""
+}
+
+// Returns source pattern or "" for no source pattern
+// Extracts without using expected segment order
+func extractSource(segments []string) string {
+	for i := range segments {
+		candidates := segments[i:]
+		if res := parseSource(candidates); res != "" {
+			return res
+		}
+	}
+	return ""
+}
+
+// Returns audio pattern or "" for no audio pattern
+// Extracts without using expected segment order
+func extractAudio(segments []string) string {
+	for i := range segments {
+		candidates := segments[i:]
+		if res := parseAudio(candidates); res != "" {
+			return res
+		}
+	}
+	return ""
+}
+
+func extractLanguage(segments []string) string {
+	for i := range segments {
+		candidates := segments[i:]
+		if language := parseLanguage(candidates); language != "" {
+			return language
+		}
+	}
+	return ""
 }
 
 // Helper function to return resolution if left most segments are a resolution or empty string if not
@@ -137,4 +238,68 @@ func parseSeason(segments []string) int {
 		
 	}
 	return -1
+}
+
+
+// Returns -1 for EPISODE pattern not matched, 0 for match without number, > 0 for EPISODE number
+func parseEpisode(segments []string) int {
+	for _, re := range patterns.GetEpisodePatterns() {
+		match := matchSegments(segments, (*regexp.Regexp)(re))
+
+		if match == nil {
+			continue
+		}
+		if len(match) == 1 {
+			return 0	
+		}
+
+		if ep, err := strconv.Atoi(match[1]); err == nil {
+			return ep
+		}
+		return 0 // matched but couldn't parse number
+		
+	}
+	return -1
+}
+
+func parseVideoExt(segments []string) string {
+	for _, re := range patterns.GetVideoExtensionPatterns() {
+		match := matchSegments(segments, (*regexp.Regexp)(re))
+		if match != nil {
+			return match[0]
+		}
+	}
+	return ""
+}
+
+func parseSubtitleExt(segments []string) string {
+	for _, re := range patterns.GetSubtitleExtensionPatterns() {
+		match := matchSegments(segments, (*regexp.Regexp)(re))
+		if match != nil {
+			return match[0]
+		}
+	}
+	return ""
+}
+
+func parseAudioExt(segments []string) string {
+	for _, re := range patterns.GetAudioExtensionPatterns() {
+		match := matchSegments(segments, (*regexp.Regexp)(re))
+		if match != nil {
+			return match[0]
+		}
+	}
+	return ""
+}
+
+func parseLanguage(segments []string) string {
+	for _, group := range patterns.GetLanguagePatternGroups() {
+		for _, re := range group.Patterns {
+			match := matchSegments(segments, (*regexp.Regexp)(re)) 
+			if match != nil {
+				return group.Key
+			}
+		}
+	}
+	return ""
 }

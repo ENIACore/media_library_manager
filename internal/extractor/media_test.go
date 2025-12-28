@@ -1,16 +1,16 @@
 package extractor
 
 import (
-	//"log/slog"
 	"testing"
+	"strings"
 )
 
 func TestExtractTitle(t *testing.T) {
-	//log := slog.Default()
 	tests := []struct {
-		name		string
-		input		[]string
-		expected	string
+		name			string
+		input			[]string
+		expectedTitle	[]string
+		expectedIdx		int
 	}{
 		{
 			name: 		"format <title>.<year (optional)>.<resolution, codec, source, or audio>",
@@ -20,7 +20,25 @@ func TestExtractTitle(t *testing.T) {
 				"2020",
 				"1080P",
 			},
-			expected:	"MOVIE.TITLE",
+			expectedTitle: []string{
+				"MOVIE",
+				"TITLE",
+			},
+		},
+		{
+			name: 		"format <title>..<resolution, codec, source, or audio>",
+			input:		[]string{
+				"MY",
+				"MOVIE",
+				"TITLE",
+				"1080P",
+				"MP4",
+			},
+			expectedTitle: []string{
+				"MY",
+				"MOVIE",
+				"TITLE",
+			},
 		},
 		{
 			name: 		"format <title>.<year (optional)>.<season or ep>",
@@ -30,7 +48,10 @@ func TestExtractTitle(t *testing.T) {
 				"2020",
 				"S4",
 			},
-			expected:	"MOVIE.TITLE",
+			expectedTitle: []string{
+				"MOVIE",
+				"TITLE",
+			},
 		},
 		{
 			name: 		"format <title>.<year (optional)>.<file ext>",
@@ -38,9 +59,12 @@ func TestExtractTitle(t *testing.T) {
 				"MOVIE",
 				"TITLE",
 				"2020",
-				".MP4",
+				"MP4",
 			},
-			expected:	"MOVIE.TITLE",
+			expectedTitle: []string{
+				"MOVIE",
+				"TITLE",
+			},
 		},
 		{
 			name: 		"format <title>.<year (optional)>",
@@ -49,19 +73,446 @@ func TestExtractTitle(t *testing.T) {
 				"TITLE",
 				"2020",
 			},
-			expected:	"MOVIE.TITLE",
+			expectedTitle: []string{
+				"MOVIE",
+				"TITLE",
+			},
+		},
+		/*
+			* Tests for titles containing years
+		*/
+		{
+			name: 		"format <title>.<year in title>.<title>.<year>.<terminator>",
+			input:		[]string{
+				"MOVIE",
+				"1999",
+				"TITLE",
+				"2020",
+				"1080P",
+			},
+			expectedTitle: []string{
+				"MOVIE",
+				"1999",
+				"TITLE",
+			},
+		},
+		{
+			name: 		"format <title>.<year in title>.<year>.<terminator>",
+			input:		[]string{
+				"MOVIE",
+				"TITLE",
+				"1999",
+				"2020",
+				"1080P",
+			},
+			expectedTitle: []string{
+				"MOVIE",
+				"TITLE",
+				"1999",
+			},
+		},
+		{
+			name: 		"format <title>.<year in title>.<title>.<terminator>",
+			input:		[]string{
+				"MOVIE",
+				"1999",
+				"TITLE",
+				"1080P",
+			},
+			expectedTitle: []string{
+				"MOVIE",
+				"1999",
+				"TITLE",
+			},
+		},
+		{
+			// IMPORTANT: Extractor will not be able to differentiate year
+			name: 		"format <title>.<year in title>.<terminator>",
+			input:		[]string{
+				"MOVIE",
+				"TITLE",
+				"1999",
+				"1080P",
+			},
+			expectedTitle: []string{
+				"MOVIE",
+				"TITLE",
+			},
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			/*
-			title := extractTitle(test.input, log)	
-			if title != test.expected {
-				t.Errorf("extractTitle = %v, want %v", title, test.expected)
+			title := extractTitle(test.input)	
+			if strings.Join(title, "") != strings.Join(test.expectedTitle, "") && len(title) != len(test.expectedTitle) {
+				t.Errorf("extractTitle title = %v, want %v", title, test.expectedTitle)
 			}
-			*/
 
+
+		})
+	}
+}
+
+func TestExtractYear(t *testing.T) {
+	tests := []struct{
+		name			string
+		input			[]string
+		expectedYear	int
+		expectedIdx		int
+	}{
+		{
+			name: "successful <...>.<year (optional)>.<resolution, codec, source, or audio>",
+			input:	[]string{
+				"2020",
+				"1080P",
+			},
+			expectedYear: 2020,
+		},
+		{
+			name: "successful <...>.<year (optional)>.<season or ep>",
+			input:	[]string{
+				"2020",
+				"S04",
+			},
+			expectedYear: 2020,
+		},
+		{
+			name: "successful <...>.<year (optional)>.<file ext>",
+			input:	[]string{
+				"2020",
+				"MP4",
+			},
+			expectedYear: 2020,
+		},
+		{
+			name: "successful <...>.<year (optional)>",
+			input:	[]string{
+				"2020",
+			},
+			expectedYear: 2020,
+		},
+		{
+			name: "missing year",
+			input:	[]string{
+				"1080P",
+				"MP4",
+			},
+			expectedYear: -1,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			year := extractYear(test.input)
+			if year != test.expectedYear {
+				t.Errorf("extractYear year = %v, want %v", year, test.expectedYear)
+			}
+		})
+	}
+}
+
+
+func TestExtractSeason(t *testing.T) {
+	tests := []struct{
+		name		string
+		input		[]string
+		expected	int
+	}{
+		{
+			name:		"season without number",
+			input:		[]string{
+				"MY",
+				"MOVIE",
+				"TITLE",
+				"SEASON",
+				"EPISODE",
+				"1080P",
+				"MP4",
+			},
+			expected: 	0,
+		},
+		{
+			name:		"season with number",
+			input:		[]string{
+				"MY",
+				"MOVIE",
+				"TITLE",
+				"S001",
+				"EPISODE",
+				"1080P",
+				"MP4",
+			},
+			expected: 	1,
+		},
+		{
+			name:		"no season",
+			input:		[]string{
+				"MY",
+				"MOVIE",
+				"TITLE",
+				"EPISODE",
+				"1080P",
+				"MP4",
+			},
+			expected: 	-1,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			season := extractSeason(test.input)
+
+			if season != test.expected {
+				t.Errorf("extractSeason = %v, want %v", season, test.expected)
+			}
+		})
+	}
+}
+
+func TestExtractEpisode(t *testing.T) {
+	tests := []struct{
+		name		string
+		input		[]string
+		expected	int
+	}{
+		{
+			name:		"ep without number",
+			input:		[]string{
+				"MY",
+				"MOVIE",
+				"TITLE",
+				"SEASON",
+				"EPISODE",
+				"1080P",
+				"MP4",
+			},
+			expected: 	0,
+		},
+		{
+			name:		"ep with number",
+			input:		[]string{
+				"MY",
+				"MOVIE",
+				"TITLE",
+				"SEASON",
+				"EP001",
+				"1080P",
+				"MP4",
+			},
+			expected: 	1,
+		},
+		{
+			name:		"no ep",
+			input:		[]string{
+				"MY",
+				"MOVIE",
+				"TITLE",
+				"SEASON",
+				"1080P",
+				"MP4",
+			},
+			expected: 	-1,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			season := extractEpisode(test.input)
+
+			if season != test.expected {
+				t.Errorf("extractEpisode = %v, want %v", season, test.expected)
+			}
+		})
+	}
+}
+
+func TestExtractResolution(t *testing.T) {
+	tests := []struct{
+		name		string
+		input		[]string
+		expected	string
+	}{
+		{
+			name:		"resolution without capture group",
+			input:		[]string{
+				"MY",
+				"MOVIE",
+				"1080P",
+				"MP4",
+			},
+			expected:	"1080p",
+		},
+		{
+			name:		"no resolution",
+			input:		[]string{
+				"MY",
+				"MOVIE",
+				"MP4",
+			},
+			expected:	"",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			res := extractResolution(test.input)	
+			if res != test.expected {
+				t.Errorf("extractResolution = %v, want %v", res, test.expected)
+			}
+		})
+	}
+}
+
+func TestExtractCodec(t *testing.T) {
+	tests := []struct{
+		name		string
+		input		[]string
+		expected	string
+	}{
+		{
+			name:		"codec without capture group",
+			input:		[]string{
+				"MY",
+				"MOVIE",
+				"X265",
+				"MP4",
+			},
+			expected:	"x265",
+		},
+		{
+			name:		"no codec",
+			input:		[]string{
+				"MY",
+				"MOVIE",
+				"MP4",
+			},
+			expected:	"",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			res := extractCodec(test.input)	
+			if res != test.expected {
+				t.Errorf("extractCodec = %v, want %v", res, test.expected)
+			}
+		})
+	}
+}
+
+func TestExtractSource(t *testing.T) {
+	tests := []struct{
+		name		string
+		input		[]string
+		expected	string
+	}{
+		{
+			name:		"source without capture group",
+			input:		[]string{
+				"MOVIE",
+				"TITLE",
+				"BD",
+				"RIP",
+				"MP4",
+			},
+			expected:	"BluRay",
+		},
+		{
+			name:		"no source",
+			input:		[]string{
+				"MY",
+				"MOVIE",
+				"MP4",
+			},
+			expected:	"",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			res := extractSource(test.input)	
+			if res != test.expected {
+				t.Errorf("extractSource = %v, want %v", res, test.expected)
+			}
+		})
+	}
+}
+
+func TestExtractAudio(t *testing.T) {
+	tests := []struct{
+		name		string
+		input		[]string
+		expected	string
+	}{
+		{
+			name:		"audio without capture group",
+			input:		[]string{
+				"MOVIE",
+				"TITLE",
+				"DOLBY",
+				"ATMOS",
+				"MP4",
+			},
+			expected:	"Atmos",
+		},
+		{
+			name:		"no audio",
+			input:		[]string{
+				"MY",
+				"MOVIE",
+				"MP4",
+			},
+			expected:	"",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			res := extractAudio(test.input)	
+			if res != test.expected {
+				t.Errorf("extractAudio = %v, want %v", res, test.expected)
+			}
+		})
+	}
+}
+
+func TestExtractLanguage(t *testing.T) {
+	tests := []struct{
+		name		string
+		input		[]string
+		expected	string
+	}{
+		{
+			name:		"valid language",
+			input:		[]string{
+				"MOVIE",	
+				"TITLE",	
+				"2020",	
+				"1080P",	
+				"ENG",	
+				"SRT",	
+			},
+			expected:	"ENGLISH",
+		},
+		{
+			name:		"missing language",
+			input:		[]string{
+				"MOVIE",	
+				"TITLE",	
+				"2020",	
+				"1080P",	
+				"SRT",	
+			},
+			expected:	"",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			language := extractLanguage(test.input)
+			if language != test.expected {
+				t.Errorf("extractLanguage = %v, want %v", language, test.expected)
+			}
 		})
 	}
 }
@@ -337,3 +788,195 @@ func TestParseSeason(t *testing.T) {
 	}
 }
 
+func TestParseEpisode(t *testing.T) {
+	tests := []struct {
+		name			string
+		input			[]string
+		expected		int
+	}{
+		{
+			name:		"valid episode with number",
+			input:		[]string{
+				"E04",
+				"1080P",
+				"X265",
+				"MP4",
+			},
+			expected: 4,
+		},
+		{
+			name:		"valid episode without number",
+			input:		[]string{
+				"EPISODE",
+				"1080P",
+				"X265",
+				"MP4",
+			},
+			expected: 0,
+		},
+		{
+			name:		"invalid episode",
+			input:		[]string{
+				"INCORRECTE04",
+				"1080P",
+				"X265",
+				"MP4",
+			},
+			expected: -1,
+		},
+		{
+			name:		"episode at second segment",
+			input:		[]string{
+				"INCORRECT",
+				"E04",
+				"1080P",
+				"X265",
+				"MP4",
+			},
+			expected: -1,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			ep := parseEpisode(test.input)
+			if ep != test.expected {
+				t.Errorf("parseEpisode = %v, want %v", ep, test.expected)
+			}
+		})
+	}
+}
+
+
+func TestParseVideoExt(t *testing.T) {
+	tests := []struct {
+		name			string
+		input			[]string
+		expected		string
+	}{
+		{
+			name:		"valid ext",
+			input:		[]string{
+				"MP4",
+			},
+			expected: "MP4",
+		},
+		{
+			name:		"invalid ext",
+			input:		[]string{
+				"MP6",
+			},
+			expected: "",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			ext := parseVideoExt(test.input)
+			if ext != test.expected {
+				t.Errorf("parseVideoExt = %v, want %v", ext, test.expected)
+			}
+		})
+	}
+}
+
+
+func TestParseSubtitleExt(t *testing.T) {
+	tests := []struct {
+		name			string
+		input			[]string
+		expected		string
+	}{
+		{
+			name:		"valid ext",
+			input:		[]string{
+				"SRT",
+			},
+			expected: "SRT",
+		},
+		{
+			name:		"invalid ext",
+			input:		[]string{
+				"SRTT",
+			},
+			expected: "",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			ext := parseSubtitleExt(test.input)
+			if ext != test.expected {
+				t.Errorf("parseSubtitleExt = %v, want %v", ext, test.expected)
+			}
+		})
+	}
+}
+
+
+func TestParseAudioExt(t *testing.T) {
+	tests := []struct {
+		name			string
+		input			[]string
+		expected		string
+	}{
+		{
+			name:		"valid ext",
+			input:		[]string{
+				"MP3",
+			},
+			expected: "MP3",
+		},
+		{
+			name:		"invalid ext",
+			input:		[]string{
+				"MP6",
+			},
+			expected: "",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			ext := parseAudioExt(test.input)
+			if ext != test.expected {
+				t.Errorf("parseAudioExt = %v, want %v", ext, test.expected)
+			}
+		})
+	}
+}
+
+
+func TestParseLanguage(t *testing.T) {
+	tests := []struct {
+		name			string
+		input			[]string
+		expected		string
+	}{
+		{
+			name:		"valid language",
+			input:		[]string{
+				"ENG",
+				"SRT",
+			},
+			expected: "ENGLISH",
+		},
+		{
+			name:		"no language",
+			input:		[]string{
+				"1080P",
+				"SRT",
+			},
+			expected: "",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			language := parseLanguage(test.input)
+			if language != test.expected {
+				t.Errorf("parseLanguage = %v, want %v", language, test.expected)
+			}
+		})
+	}
+}

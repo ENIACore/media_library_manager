@@ -21,7 +21,7 @@ var AudioExtensionPatterns = []Pattern{
 
 var (
 	GetVideoExtensionPatterns = sync.OnceValue(func() []*CompiledPattern {
-		return compilePatterns(AudioExtensionPatterns)
+		return compilePatterns(VideoExtensionPatterns)
 	})
 	GetSubtitleExtensionPatterns = sync.OnceValue(func() []*CompiledPattern {
 		return compilePatterns(SubtitleExtensionPatterns)
