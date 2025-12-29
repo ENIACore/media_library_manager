@@ -12,7 +12,6 @@ func Extract(path string, logger *slog.Logger) metadata.Metadata {
 	log := logger.With("func", "Extract")
 	log.Info("extracting path", "path", path)
 	filename := filepath.Base(path)	
-	filename = strings.ToUpper(filename)
 
 	sanitizedName := strings.Split(sanitizeName(filename), ".")
 	media := metadata.MediaMetadata{}
@@ -31,7 +30,7 @@ func Extract(path string, logger *slog.Logger) metadata.Metadata {
 
 	return metadata.Metadata{
 		Media:	media,
-		Path:		metadata.PathMetadata{
+		Path:	metadata.PathMetadata{
 
 		},
 	}

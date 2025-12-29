@@ -25,7 +25,8 @@ const (
 type FormatType string
 
 const (
-    Video    FormatType = "VIDEO"
-    Subtitle FormatType = "SUBTITLE"
-    UnknownFormat FormatType = "UNKNOWN"
+    Video			FormatType = "VIDEO"
+    Subtitle		FormatType = "SUBTITLE"
+	Audio			FormatType = "AUDIO"
+    UnknownFormat	FormatType = "UNKNOWN"
 )

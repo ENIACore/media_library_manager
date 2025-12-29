@@ -266,36 +266,6 @@ func parseEpisode(segments []string) int {
 	return -1
 }
 
-func parseVideoExt(segments []string) string {
-	for _, re := range patterns.GetVideoExtensionPatterns() {
-		match := matchSegments(segments, (*regexp.Regexp)(re))
-		if match != nil {
-			return match[0]
-		}
-	}
-	return ""
-}
-
-func parseSubtitleExt(segments []string) string {
-	for _, re := range patterns.GetSubtitleExtensionPatterns() {
-		match := matchSegments(segments, (*regexp.Regexp)(re))
-		if match != nil {
-			return match[0]
-		}
-	}
-	return ""
-}
-
-func parseAudioExt(segments []string) string {
-	for _, re := range patterns.GetAudioExtensionPatterns() {
-		match := matchSegments(segments, (*regexp.Regexp)(re))
-		if match != nil {
-			return match[0]
-		}
-	}
-	return ""
-}
-
 func parseLanguage(segments []string) string {
 	for _, group := range patterns.GetLanguagePatternGroups() {
 		for _, re := range group.Patterns {
