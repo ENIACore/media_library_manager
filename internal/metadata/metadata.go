@@ -18,7 +18,6 @@ type Media struct {
 type Path struct {
 	Dest			string
 	Source			string
-	IsDir			bool
-	Ext				string
-	Format			FormatType
+	Ext				string // Empty if directory or no ext
+	Format			File // -1 if directory or no ext
 }

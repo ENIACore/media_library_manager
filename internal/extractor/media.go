@@ -1,12 +1,41 @@
-// TODO: Make patterns return in order of specificity
 package extractor
 
 import (
+	"fmt"
+	"strings"
 	"regexp"
 	"strconv"
 	"time"
+	"log/slog"
 	"github.com/ENIACore/media_library_manager/internal/patterns"
+	"github.com/ENIACore/media_library_manager/internal/metadata"
+	"path/filepath"
 )
+
+
+
+func ExtractMedia(path string, logger *slog.Logger) metadata.Media {
+	log := logger.With("func", "Extract")
+	log.Info("extracting path", "path", path)
+	filename := filepath.Base(path)	
+
+	sanitizedName := strings.Split(sanitizeName(filename), ".")
+	media := metadata.Media{}
+	title := extractTitle(sanitizedName)
+	sanitizedName = sanitizedName[len(title):]
+
+	media.Title = title
+	media.Year = extractYear(sanitizedName)
+	media.Episode = extractEpisode(sanitizedName)
+	media.Season = extractSeason(sanitizedName)
+	media.Resolution = extractResolution(sanitizedName)
+	media.Codec = extractCodec(sanitizedName)
+	media.Source = extractSource(sanitizedName)
+	media.Audio = extractAudio(sanitizedName)
+	log.Debug("successfully extracted media metadata", "media-metadata", fmt.Sprintf("%+v", media))
+
+	return media
+}
 
 // Returns title starting from left most segment
 // Extracts using segment order:

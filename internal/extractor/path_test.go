@@ -2,43 +2,7 @@ package extractor
 
 import (
 	"testing"
-
-	"github.com/ENIACore/media_library_manager/internal/metadata"
 )
-
-func TestParsePath(t *testing.T) {
-	tests := []struct{
-		name			string
-		input			string
-		expectedValue	metadata.PathMetadata
-		expectedError	bool
-	}{
-		{
-			name:			"valid file path",
-			input:			"",	
-			expectedValue:	metadata.PathMetadata{
-
-			},
-			expectedError:	false,
-		},
-		{
-			name:			"valid directory path",
-			input:			"",	
-			expectedValue:	metadata.PathMetadata{
-
-			},
-			expectedError:	false,
-		},
-		{
-			name:			"non-existent path",
-			input:			"",	
-			expectedValue:	metadata.PathMetadata{
-
-			},
-			expectedError:	false,
-		},
-	}
-}
 
 func TestParseVideoExt(t *testing.T) {
 	tests := []struct {

@@ -36,7 +36,7 @@ type Node uint8
 
 // Classification of node that describes purpose of file or directory
 const (
-	MovieFile	Node = iota	
+	MovieFile		Node = iota	
 	EpisodeFile
 	SubtitleFile
 	BonusFile
@@ -49,11 +49,11 @@ const (
 )
 
 
-type Format uint8
+type File uint8
 
-// Format of file that describes type of file
+// Type of file
 const (
-    Video			Format = iota
+    Video			File = iota
     Subtitle		
 	Audio		
 )
