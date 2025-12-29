@@ -1,32 +1,59 @@
 package metadata
 
-// NodeType represents the type of a filesystem node
-type NodeType string
+// Structure of media torrents
+/*
+Movie File
+Episode File
+Subtitle File
+Bonus File
 
+Subtitle Directory
+└── Subtitle File(s)
+
+Bonus Directory
+├── Bonus File(s)
+└── Subtitle File(s) (optional)
+
+Movie Directory
+├── Movie File
+├── Subtitle File (optional)
+├── Bonus File (optional)
+└── Bonus Directory (optional)
+
+Season Directory
+├── Episode File(s)
+├── Subtitle File(s) (optional)
+├── Bonus Directory (optional)
+└── Subtitle Directory (optional)
+
+Series Directory
+├── Season Directory(s)
+├── Bonus Directory (optional)
+└── Subtitle Directory (optional)
+*/
+
+type Node uint8
+
+// Classification of node that describes purpose of file or directory
 const (
-    // UnknownType
-    Unknown NodeType = "UNKNOWN"
-    
-    // DirectoryType
-    SeriesFolder   NodeType = "SERIES_FOLDER"
-    SeasonFolder   NodeType = "SEASON_FOLDER"
-    MovieFolder    NodeType = "MOVIE_FOLDER"
-    SubtitleFolder NodeType = "SUBTITLE_FOLDER"
-    ExtrasFolder   NodeType = "EXTRAS_FOLDER"
-    
-    // FileType
-    MovieFile    NodeType = "MOVIE_FILE"
-    EpisodeFile  NodeType = "EPISODE_FILE"
-    SubtitleFile NodeType = "SUBTITLE_FILE"
-    ExtrasFile   NodeType = "EXTRAS_FILE"
+	MovieFile	Node = iota	
+	EpisodeFile
+	SubtitleFile
+	BonusFile
+	
+	SubtitleDir
+	BonusDir
+	MovieDir
+	SeasonDir
+	SeriesDir
 )
 
-// FormatType represents the format of a file
-type FormatType string
 
+type Format uint8
+
+// Format of file that describes type of file
 const (
-    Video			FormatType = "VIDEO"
-    Subtitle		FormatType = "SUBTITLE"
-	Audio			FormatType = "AUDIO"
-    UnknownFormat	FormatType = "UNKNOWN"
+    Video			Format = iota
+    Subtitle		
+	Audio		
 )
