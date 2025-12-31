@@ -18,7 +18,7 @@ func TestExtractMedia(t *testing.T) {
 	}{
 		{
 			name:		"successful path",
-			input:		"example.series.2025.s01.e001.1080p.x.265.bd.rip.atmos",
+			input:		"/parent/child/example.series.2025.s01.e001.1080p.x.265.bd.rip.atmos.eng.mp4",
 			expected:	metadata.MediaInfo{
 				Title: []string{
 					"EXAMPLE",
@@ -31,6 +31,7 @@ func TestExtractMedia(t *testing.T) {
 				Codec: "x265",
 				Source: "BluRay",
 				Audio: "Atmos",
+				Language: "ENGLISH",
 			},
 		},
 	}

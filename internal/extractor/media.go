@@ -16,25 +16,26 @@ import (
 
 func ExtractMedia(path string, logger *slog.Logger) metadata.MediaInfo {
 	log := logger.With("func", "ExtractMedia")
-	log.Info("extracting path", "path", path)
+	log.Info("extracting media info from path", "path", path)
 	filename := filepath.Base(path)	
 
 	sanitizedName := strings.Split(sanitizeName(filename), ".")
-	media := metadata.MediaInfo{}
+	mediaInfo := metadata.MediaInfo{}
 	title := extractTitle(sanitizedName)
 	sanitizedName = sanitizedName[len(title):]
 
-	media.Title = title
-	media.Year = extractYear(sanitizedName)
-	media.Episode = extractEpisode(sanitizedName)
-	media.Season = extractSeason(sanitizedName)
-	media.Resolution = extractResolution(sanitizedName)
-	media.Codec = extractCodec(sanitizedName)
-	media.Source = extractSource(sanitizedName)
-	media.Audio = extractAudio(sanitizedName)
-	log.Debug("successfully extracted media metadata", "media-metadata", fmt.Sprintf("%+v", media))
+	mediaInfo.Title = title
+	mediaInfo.Year = extractYear(sanitizedName)
+	mediaInfo.Episode = extractEpisode(sanitizedName)
+	mediaInfo.Season = extractSeason(sanitizedName)
+	mediaInfo.Resolution = extractResolution(sanitizedName)
+	mediaInfo.Codec = extractCodec(sanitizedName)
+	mediaInfo.Source = extractSource(sanitizedName)
+	mediaInfo.Audio = extractAudio(sanitizedName)
+	mediaInfo.Language = extractLanguage(sanitizedName)
+	log.Debug("successfully extracted media metadata", "media-metadata", fmt.Sprintf("%+v", mediaInfo))
 
-	return media
+	return mediaInfo
 }
 
 // Returns title starting from left most segment

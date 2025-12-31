@@ -2,7 +2,105 @@ package extractor
 
 import (
 	"testing"
+	"github.com/ENIACore/media_library_manager/internal/metadata"
+	"log/slog"
+	"reflect"
 )
+
+func TestExtractPath(t *testing.T) {
+	logger := slog.Default()
+	tests := []struct {
+		name			string
+		input			string
+		expected		metadata.PathInfo	
+	}{
+		{
+			name:			"valid input",
+			input:			"parent/child/my.movie.mp4",
+			expected:		metadata.PathInfo{
+				Dest: "",
+				Source:	"parent/child/my.movie.mp4",
+				Ext: "MP4",
+				Type: metadata.Video,
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			pathInfo := ExtractPath(test.input, logger)
+
+			if !reflect.DeepEqual(pathInfo, test.expected) {
+				t.Errorf("ExtractPath = %+v, want %+v", pathInfo, test.expected)
+			}
+		})
+	}
+}
+
+func TestExtractType(t *testing.T) {
+	tests := []struct {
+		name			string
+		input			[]string
+		expectedType	metadata.ContentType
+		expectedExt		string
+	}{
+		{
+			name:			"valid video extension",
+			input:			[]string{
+				"MY",
+				"VIDEO",
+				"MP4",
+			},
+			expectedType: metadata.Video,
+			expectedExt: "MP4",
+		},
+		{
+			name:			"valid subtitle extension",
+			input:			[]string{
+				"MY",
+				"SUBTITLE",
+				"SRT",
+			},
+			expectedType: metadata.Subtitle,
+			expectedExt: "SRT",
+		},
+		/* Add audio later when supported
+		{
+			name:			"valid video extension",
+			input:			[]string{
+				"MY",
+				"VIDEO",
+				"MP4",
+			},
+			expectedType: metadata.Video,
+			expectedExt: "MP4",
+		},
+		*/
+		{
+			name:			"invalid extension",
+			input:			[]string{
+				"MY",
+				"VIDEO",
+				"MP45",
+			},
+			expectedType: metadata.ContentType(metadata.Unknown),
+			expectedExt: "",
+		},
+	}
+	
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			contentType, ext := extractType(test.input)
+
+			if contentType != test.expectedType {
+				t.Errorf("extractType content type = %v, want %v", contentType, test.expectedType)
+			}
+			if ext != test.expectedExt {
+				t.Errorf("extractType ext = %v, want %v", ext, test.expectedExt)
+			}
+		})
+	}
+}
 
 func TestParseVideoExt(t *testing.T) {
 	tests := []struct {

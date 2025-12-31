@@ -1,6 +1,8 @@
 package extractor
 
 import (
+	"path/filepath"
+	"strings"
 	"github.com/ENIACore/media_library_manager/internal/patterns"
 	"github.com/ENIACore/media_library_manager/internal/metadata"
 	"log/slog"
@@ -8,9 +10,37 @@ import (
 )
 
 func ExtractPath(path string, logger *slog.Logger) metadata.PathInfo {
-	//log := logger.With("func", "ExtractPath")
+	log := logger.With("func", "ExtractPath")
+	log.Info("extracting path info from path", "path", path)
+	filename := filepath.Base(path)	
+	sanitizedName := strings.Split(sanitizeName(filename), ".")
 
-	return metadata.PathInfo{}
+	pathInfo := metadata.PathInfo{}
+	pathInfo.Source = path
+	pathInfo.Type, pathInfo.Ext = extractType(sanitizedName)
+	
+
+	return pathInfo
+}
+
+// Extracts both content type and extension
+// Returns metadata.Unknown and "" if not found or unsupported
+func extractType(segments []string) (metadata.ContentType, string) {
+	for i := range segments {
+		candidates := segments[i:]	
+		if match := parseVideoExt(candidates); match != "" {
+			return metadata.Video, match
+		}
+		if match := parseSubtitleExt(candidates); match != "" {
+			return metadata.Subtitle, match
+		}
+		/* TODO: Audio files not yet supported
+		if match := parseAudioExt(candidates); match != "" {
+			return match
+		}
+		*/
+	}
+	return metadata.ContentType(metadata.Unknown), ""
 }
 
 func parseVideoExt(segments []string) string {
