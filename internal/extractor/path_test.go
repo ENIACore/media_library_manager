@@ -16,10 +16,10 @@ func TestExtractPath(t *testing.T) {
 	}{
 		{
 			name:			"valid input",
-			input:			"parent/child/my.movie.mp4",
+			input:			"/parent/child/my.movie.mp4",
 			expected:		metadata.PathInfo{
 				Dest: "",
-				Source:	"parent/child/my.movie.mp4",
+				Source:	"/parent/child/my.movie.mp4",
 				Ext: "MP4",
 				Type: metadata.Video,
 			},

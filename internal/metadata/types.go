@@ -32,7 +32,9 @@ Series Directory
 └── Subtitle Directory (optional)
 */
 
-type EntryRole uint8
+type EntryRole int8
+
+const Unknown		int8 = -1
 
 // Classification of node that describes purpose of file or directory
 const (
@@ -49,11 +51,11 @@ const (
 )
 
 
-type ContentType uint8
+type ContentType int8
 
 // Type of file
 const (
     Video			ContentType = iota
     Subtitle		
-	Audio		
+	//Audio			- Audio classification not yet included		
 )

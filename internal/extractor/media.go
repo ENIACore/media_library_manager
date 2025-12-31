@@ -33,7 +33,7 @@ func ExtractMedia(path string, logger *slog.Logger) metadata.MediaInfo {
 	mediaInfo.Source = extractSource(sanitizedName)
 	mediaInfo.Audio = extractAudio(sanitizedName)
 	mediaInfo.Language = extractLanguage(sanitizedName)
-	log.Debug("successfully extracted media metadata", "media-metadata", fmt.Sprintf("%+v", mediaInfo))
+	log.Debug("successfully extracted media info", "media-info", fmt.Sprintf("%+v", mediaInfo))
 
 	return mediaInfo
 }

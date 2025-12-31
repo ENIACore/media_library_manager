@@ -7,6 +7,7 @@ import (
 	"github.com/ENIACore/media_library_manager/internal/metadata"
 	"log/slog"
 	"regexp"
+	"fmt"
 )
 
 func ExtractPath(path string, logger *slog.Logger) metadata.PathInfo {
@@ -18,6 +19,7 @@ func ExtractPath(path string, logger *slog.Logger) metadata.PathInfo {
 	pathInfo := metadata.PathInfo{}
 	pathInfo.Source = path
 	pathInfo.Type, pathInfo.Ext = extractType(sanitizedName)
+	log.Debug("successfully extracted path info", "path-info", fmt.Sprintf("%+v", pathInfo))
 	
 
 	return pathInfo
