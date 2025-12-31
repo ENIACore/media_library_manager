@@ -11,8 +11,8 @@ import (
 
 
 type Entry struct {
-	parent		*Entry
-	children	[]*Entry
+	Parent		*Entry
+	Children	[]*Entry
 
 	metadata.MediaInfo
 	metadata.PathInfo
@@ -26,7 +26,7 @@ func ParseTree(path string, parent *Entry, logger *slog.Logger) (*Entry, error) 
     }
 
     node := &Entry{
-        parent:		parent,
+        Parent:		parent,
 		MediaInfo: extractor.ExtractMedia(path, logger),
 		PathInfo: extractor.ExtractPath(path, logger),
     }
@@ -48,7 +48,7 @@ func ParseTree(path string, parent *Entry, logger *slog.Logger) (*Entry, error) 
 		}
 		children = append(children, child)
 	}
-	node.children = children
+	node.Children = children
     
     return node, nil
 }

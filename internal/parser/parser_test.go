@@ -17,20 +17,20 @@ func TestParseTree(t *testing.T) {
 		t.Errorf("ParseTree returns error %v", err)
 	}
 
-	if root.parent != nil {
+	if root.Parent != nil {
 		t.Errorf("ParseTree root not nil, want nil")
 	}
 	
-	if len(root.children) != 2 {
-		t.Errorf("ParseTree root children len %v, want 2", len(root.children))
+	if len(root.Children) != 2 {
+		t.Errorf("ParseTree root children len %v, want 2", len(root.Children))
 	}
 
-	depth := getDepth(root.children[0], 1) 
+	depth := getDepth(root.Children[0], 1) 
 	if depth != 2 {
 		t.Errorf("Expected depth of 2 for tempdir/dir/file.txt, got %v", depth) 
 	}
 
-	depth = getDepth(root.children[1], 1)
+	depth = getDepth(root.Children[1], 1)
 	if depth != 4 {
 		t.Errorf("Expected depth of 4 for tempdir/parent/child/subchild/file.txt, got %v", depth) 
 	}
@@ -42,13 +42,13 @@ func TestParseTree(t *testing.T) {
 	
 }
 
-func getDepth(node *Entry, depth int) int {
-	if len(node.children) == 0 {
+func getDepth(entry *Entry, depth int) int {
+	if len(entry.Children) == 0 {
 		return depth	
 	}
 
 	max := depth
-	for _, child := range node.children {
+	for _, child := range entry.Children {
 		childDepth := getDepth(child, depth + 1)	
 
 		if childDepth > max {
