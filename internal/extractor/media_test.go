@@ -3,7 +3,47 @@ package extractor
 import (
 	"testing"
 	"strings"
+	"log/slog"
+	"github.com/ENIACore/media_library_manager/internal/metadata"
+	"reflect"
 )
+
+
+func TestExtractMedia(t *testing.T) {
+	logger := slog.Default()
+	tests := []struct{
+		name		string
+		input		string
+		expected	metadata.Media	
+	}{
+		{
+			name:		"successful path",
+			input:		"example.series.2025.s01.e001.1080p.x.265.bd.rip.atmos",
+			expected:	metadata.Media{
+				Title: []string{
+					"EXAMPLE",
+					"SERIES",
+				},
+				Year: 2025,
+				Season: 1,
+				Episode: 1,
+				Resolution: "1080p",
+				Codec: "x265",
+				Source: "BluRay",
+				Audio: "Atmos",
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			media := ExtractMedia(test.input, logger)
+			if !reflect.DeepEqual(media, test.expected) {
+				t.Errorf("ExtractMedia = %+v, want %+v", media, test.expected)
+			}
+		})
+	}
+}
 
 func TestExtractTitle(t *testing.T) {
 	tests := []struct {
