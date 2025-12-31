@@ -10,23 +10,25 @@ import (
 )
 
 
-type Node struct {
-	parent		*Node
-	children	[]*Node
+type Entry struct {
+	parent		*Entry
+	children	[]*Entry
 
-	metadata.Metadata
+	metadata.MediaInfo
+	metadata.PathInfo
 }
 
-func ParseTree(path string, parent *Node, logger *slog.Logger) (*Node, error) {
+func ParseTree(path string, parent *Entry, logger *slog.Logger) (*Entry, error) {
 
     info, err := os.Stat(path)
     if err != nil {
 		return nil, fmt.Errorf("stat path %s, %w", path, err)
     }
 
-    node := &Node{
+    node := &Entry{
         parent:		parent,
-		Metadata:	extractor.Extract(path, logger),
+		MediaInfo: extractor.ExtractMedia(path, logger),
+		PathInfo: extractor.ExtractPath(path, logger),
     }
 	if !info.IsDir() {
 		return node, nil
@@ -37,7 +39,7 @@ func ParseTree(path string, parent *Node, logger *slog.Logger) (*Node, error) {
 		return nil, fmt.Errorf("read dir %s, %w", path, err)
 	}
 
-	children := make([]*Node, 0, len(entries))
+	children := make([]*Entry, 0, len(entries))
 	for _, entry := range entries {
 		childPath := filepath.Join(path, entry.Name())
 		child, err := ParseTree(childPath, node, logger)

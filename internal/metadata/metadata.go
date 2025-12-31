@@ -1,6 +1,6 @@
 package metadata
 
-type Media struct {
+type MediaInfo struct {
 	Title		[]string
 	Year		int // -1 if no year
 
@@ -15,9 +15,9 @@ type Media struct {
 	Language	string // Empty if not found
 }
 
-type Path struct {
+type PathInfo struct {
 	Dest			string
 	Source			string
 	Ext				string // Empty if directory or no ext
-	Format			File // -1 if directory or no ext
+	Type			ContentType // -1 if directory or no ext
 }

@@ -14,12 +14,12 @@ func TestExtractMedia(t *testing.T) {
 	tests := []struct{
 		name		string
 		input		string
-		expected	metadata.Media	
+		expected	metadata.MediaInfo	
 	}{
 		{
 			name:		"successful path",
 			input:		"example.series.2025.s01.e001.1080p.x.265.bd.rip.atmos",
-			expected:	metadata.Media{
+			expected:	metadata.MediaInfo{
 				Title: []string{
 					"EXAMPLE",
 					"SERIES",

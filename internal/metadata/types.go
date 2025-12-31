@@ -32,11 +32,11 @@ Series Directory
 └── Subtitle Directory (optional)
 */
 
-type Node uint8
+type EntryRole uint8
 
 // Classification of node that describes purpose of file or directory
 const (
-	MovieFile		Node = iota	
+	MovieFile		EntryRole = iota	
 	EpisodeFile
 	SubtitleFile
 	BonusFile
@@ -49,11 +49,11 @@ const (
 )
 
 
-type File uint8
+type ContentType uint8
 
 // Type of file
 const (
-    Video			File = iota
+    Video			ContentType = iota
     Subtitle		
 	Audio		
 )

@@ -14,13 +14,13 @@ import (
 
 
 
-func ExtractMedia(path string, logger *slog.Logger) metadata.Media {
-	log := logger.With("func", "Extract")
+func ExtractMedia(path string, logger *slog.Logger) metadata.MediaInfo {
+	log := logger.With("func", "ExtractMedia")
 	log.Info("extracting path", "path", path)
 	filename := filepath.Base(path)	
 
 	sanitizedName := strings.Split(sanitizeName(filename), ".")
-	media := metadata.Media{}
+	media := metadata.MediaInfo{}
 	title := extractTitle(sanitizedName)
 	sanitizedName = sanitizedName[len(title):]
 

@@ -2,9 +2,16 @@ package extractor
 
 import (
 	"github.com/ENIACore/media_library_manager/internal/patterns"
+	"github.com/ENIACore/media_library_manager/internal/metadata"
+	"log/slog"
 	"regexp"
 )
 
+func ExtractPath(path string, logger *slog.Logger) metadata.PathInfo {
+	//log := logger.With("func", "ExtractPath")
+
+	return metadata.PathInfo{}
+}
 
 func parseVideoExt(segments []string) string {
 	for _, re := range patterns.GetVideoExtensionPatterns() {

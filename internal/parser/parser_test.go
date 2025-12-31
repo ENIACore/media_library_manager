@@ -42,7 +42,7 @@ func TestParseTree(t *testing.T) {
 	
 }
 
-func getDepth(node *Node, depth int) int {
+func getDepth(node *Entry, depth int) int {
 	if len(node.children) == 0 {
 		return depth	
 	}
