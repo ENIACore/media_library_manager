@@ -18,6 +18,6 @@ type MediaInfo struct {
 type PathInfo struct {
 	Dest			string
 	Source			string
-	Ext				string // Empty if directory or no ext
-	Type			ContentType // -1 if directory or no ext
+	Ext				string		// Empty if directory or no ext
+	Type			ContentType	// metadata.Unknown if directory or no ext
 }

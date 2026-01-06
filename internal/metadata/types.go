@@ -34,7 +34,7 @@ Series Directory
 
 type EntryRole int8
 
-const Unknown		int8 = -1
+const Unknown = -1
 
 // Classification of node that describes purpose of file or directory
 const (

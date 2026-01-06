@@ -42,7 +42,7 @@ func extractType(segments []string) (metadata.ContentType, string) {
 		}
 		*/
 	}
-	return metadata.ContentType(metadata.Unknown), ""
+	return metadata.Unknown, ""
 }
 
 func parseVideoExt(segments []string) string {

@@ -6,7 +6,10 @@ import (
 
 
 func isSubtitleDir(entry *parser.Entry) bool {
-	children := entry.childr
+	return false
+}
+
+func isBonusDir(entry *parser.Entry) bool {
 	return false
 }
 
