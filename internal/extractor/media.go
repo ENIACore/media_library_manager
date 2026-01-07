@@ -47,15 +47,15 @@ func ExtractMedia(path string, logger *slog.Logger) metadata.MediaInfo {
 //		-	<title>.<year (optional)>
 func extractTitle(segments []string) []string {
 	var title []string
-	year := -1
+	var year *int
 	for i, segment := range segments {
 		candidates := segments[i:]
 		if	parseResolution(candidates) != "" 	||
 			parseCodec(candidates) != ""		||
 			parseSource(candidates) != "" 		||
 			parseAudio(candidates) != "" 		||
-			parseSeason(candidates) > -1 		||
-			parseEpisode(candidates) > -1 		||
+			parseSeason(candidates) != nil 		||
+			parseEpisode(candidates) != nil 	||
 			parseVideoExt(candidates) != "" 	||
 			parseSubtitleExt(candidates) != "" 	||
 			parseMisc(candidates) != "" 	||
@@ -63,11 +63,11 @@ func extractTitle(segments []string) []string {
 			break
 		}
 
-		if year != -1 {
-			title = append(title, strconv.Itoa(year))
-			year = -1
+		if year != nil {
+			title = append(title, strconv.Itoa(*year))
+			year = nil
 		}
-		if year = parseYear(segment); year == -1 {
+		if year = parseYear(segment); year == nil {
 			title = append(title, segment)
 		}
 
@@ -82,8 +82,8 @@ func extractTitle(segments []string) []string {
 //		- <...>.<year (optional)>.<season or ep>...
 //		- <...>.<year (optional)>.<file ext>...
 //		- <...>.<year (optional)>
-func extractYear(segments []string) int {
-	year := -1
+func extractYear(segments []string) *int {
+	var year *int
 	for i, segment := range segments {
 
 		candidates := segments[i:]
@@ -91,8 +91,8 @@ func extractYear(segments []string) int {
 			parseCodec(candidates) != ""		||
 			parseSource(candidates) != "" 		||
 			parseAudio(candidates) != "" 		||
-			parseSeason(candidates) > -1 		||
-			parseEpisode(candidates) > -1 		||
+			parseSeason(candidates) != nil 		||
+			parseEpisode(candidates) != nil 	||
 			parseVideoExt(candidates) != "" 	||
 			parseSubtitleExt(candidates) != "" 	||
 			parseMisc(candidates) != "" 	||
@@ -104,28 +104,29 @@ func extractYear(segments []string) int {
 	return year
 }
 
-// Returns -1 for no season pattern, 0 for season without number, 0 > for season number found
+// Returns nil for no season pattern, 0 for season without number, >0 for season number found
 // Extracts without using expected segment order
-func extractSeason(segments []string) int {
+func extractSeason(segments []string) *int {
 	for i := range segments {
 		candidates := segments[i:]
-		if season := parseSeason(candidates); season > -1 {
+		if season := parseSeason(candidates); season != nil {
 			return season
 		}
 	}
-	return -1	
+	return nil
 }
 
-// Returns -1 for no episode pattern, 0 for episode without number, 0 > for episode number found
+// Returns nil for no episode pattern, 0 for episode without number, >0 for episode number found
 // Extracts without using expected segment order
-func extractEpisode(segments []string) int {
+func extractEpisode(segments []string) *int {
 	for i := range segments {
 		candidates := segments[i:]
-		if ep := parseEpisode(candidates); ep > -1 {
+		if ep := parseEpisode(candidates); ep != nil {
 			return ep
 		}
 	}
-	return -1	
+
+	return nil
 }
 
 // Returns resolution pattern or "" for no resolution pattern
@@ -234,27 +235,28 @@ func parseAudio(segments []string) string {
 	return ""
 }
 
-// Returns -1 for invalid year, otherwise returns year
-func parseYear(s string) int {
+// Returns nil for invalid year, otherwise returns year
+func parseYear(s string) *int {
 	if len(s) != 4 {
-		return -1
+		return nil
 	}
 
 	year, err := strconv.Atoi(s)	
 	if err != nil {
-		return -1
+		return nil
 	}
 
 	if year < 1930 || year > time.Now().Year() {
-		return -1
+		return nil
 	}
 
-	return year
+	return &year
 }
 
 
-// Returns -1 for SEASON pattern not matched, 0 for match without number, > 0 for season number
-func parseSeason(segments []string) int {
+// Returns nil for SEASON pattern not matched, 0 for match without number, >0 for season number
+func parseSeason(segments []string) *int {
+	unknown := 0
 	for _, re := range patterns.GetSeasonPatterns() {
 		match := matchSegments(segments, (*regexp.Regexp)(re))
 
@@ -262,21 +264,23 @@ func parseSeason(segments []string) int {
 			continue
 		}
 		if len(match) == 1 {
-			return 0	
+			return &unknown	
 		}
 
 		if season, err := strconv.Atoi(match[1]); err == nil {
-			return season
+			return &season
 		}
-		return 0 // matched but couldn't parse number
+		
+		return &unknown // matched but couldn't parse number
 		
 	}
-	return -1
+	return nil
 }
 
 
-// Returns -1 for EPISODE pattern not matched, 0 for match without number, > 0 for EPISODE number
-func parseEpisode(segments []string) int {
+// Returns nil for EPISODE pattern not matched, 0 for match without number, >0 for EPISODE number
+func parseEpisode(segments []string) *int {
+	unknown := 0
 	for _, re := range patterns.GetEpisodePatterns() {
 		match := matchSegments(segments, (*regexp.Regexp)(re))
 
@@ -284,16 +288,16 @@ func parseEpisode(segments []string) int {
 			continue
 		}
 		if len(match) == 1 {
-			return 0	
+			return &unknown	
 		}
 
 		if ep, err := strconv.Atoi(match[1]); err == nil {
-			return ep
+			return &ep
 		}
-		return 0 // matched but couldn't parse number
+		return &unknown // matched but couldn't parse number
 		
 	}
-	return -1
+	return nil
 }
 
 func parseLanguage(segments []string) string {

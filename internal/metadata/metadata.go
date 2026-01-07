@@ -1,23 +1,20 @@
 package metadata
 
 type MediaInfo struct {
-	Title		[]string
-	Year		int // -1 if no year
-
-	Episode		int // -1 if no season pattern, 0 if season pattern, > 0 if season pattern with season number
-	Season		int // -1 if no ep pattern, 0 if ep pattern, > 0 if ep pattern with ep number
-
-	Resolution	string // Empty if not found
-	Codec		string // Empty if not found
-	Source		string // Empty if not found
-	Audio		string // Empty if not found
-
-	Language	string // Empty if not found
+    Title      []string
+    Year       *int     // nil if not found
+    Episode    *int     // nil = no pattern, 0 = pattern but no number, >0 = ep number
+    Season     *int     // nil = no pattern, 0 = pattern but no number, >0 = season number
+    Resolution string   // "" if not found
+    Codec      string	
+    Source     string
+    Audio      string
+    Language   string
 }
 
 type PathInfo struct {
-	Dest			string
-	Source			string
-	Ext				string		// Empty if directory or no ext
-	Type			ContentType	// metadata.Unknown if directory or no ext
+    Dest   string
+    Source string
+    Ext    string      // "" if no ext
+    Type   ContentType // Unkown if directory or no ext
 }

@@ -8,6 +8,9 @@ import (
 	"reflect"
 )
 
+func intPtr(i int) *int {
+	return &i
+}
 
 func TestExtractMedia(t *testing.T) {
 	logger := slog.Default()
@@ -24,9 +27,9 @@ func TestExtractMedia(t *testing.T) {
 					"EXAMPLE",
 					"SERIES",
 				},
-				Year: 2025,
-				Season: 1,
-				Episode: 1,
+				Year: intPtr(2025),
+				Season: intPtr(1),
+				Episode: intPtr(1),
 				Resolution: "1080p",
 				Codec: "x265",
 				Source: "BluRay",
@@ -212,7 +215,7 @@ func TestExtractYear(t *testing.T) {
 	tests := []struct{
 		name			string
 		input			[]string
-		expectedYear	int
+		expectedYear	*int
 	}{
 		{
 			name: 		"format <title>.<year (optional)>.<misc pattern>",
@@ -223,7 +226,7 @@ func TestExtractYear(t *testing.T) {
 				"UNRATED",
 				"1080P",
 			},
-			expectedYear: 2020,
+			expectedYear: intPtr(2020),
 		},
 		{
 			name: "successful <...>.<year (optional)>.<resolution, codec, source, or audio>",
@@ -231,7 +234,7 @@ func TestExtractYear(t *testing.T) {
 				"2020",
 				"1080P",
 			},
-			expectedYear: 2020,
+			expectedYear: intPtr(2020),
 		},
 		{
 			name: "successful <...>.<year (optional)>.<season or ep>",
@@ -239,7 +242,7 @@ func TestExtractYear(t *testing.T) {
 				"2020",
 				"S04",
 			},
-			expectedYear: 2020,
+			expectedYear: intPtr(2020),
 		},
 		{
 			name: "successful <...>.<year (optional)>.<file ext>",
@@ -247,14 +250,14 @@ func TestExtractYear(t *testing.T) {
 				"2020",
 				"MP4",
 			},
-			expectedYear: 2020,
+			expectedYear: intPtr(2020),
 		},
 		{
 			name: "successful <...>.<year (optional)>",
 			input:	[]string{
 				"2020",
 			},
-			expectedYear: 2020,
+			expectedYear: intPtr(2020),
 		},
 		{
 			name: "missing year",
@@ -262,15 +265,15 @@ func TestExtractYear(t *testing.T) {
 				"1080P",
 				"MP4",
 			},
-			expectedYear: -1,
+			expectedYear: nil,
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			year := extractYear(test.input)
-			if year != test.expectedYear {
-				t.Errorf("extractYear year = %v, want %v", year, test.expectedYear)
+			if !reflect.DeepEqual(year, test.expectedYear) {
+    			t.Errorf("extractYear year = %v, want %v", year, test.expectedYear)
 			}
 		})
 	}
@@ -281,7 +284,7 @@ func TestExtractSeason(t *testing.T) {
 	tests := []struct{
 		name		string
 		input		[]string
-		expected	int
+		expected	*int
 	}{
 		{
 			name:		"season without number",
@@ -294,7 +297,7 @@ func TestExtractSeason(t *testing.T) {
 				"1080P",
 				"MP4",
 			},
-			expected: 	0,
+			expected: 	intPtr(0),
 		},
 		{
 			name:		"season with number",
@@ -307,7 +310,7 @@ func TestExtractSeason(t *testing.T) {
 				"1080P",
 				"MP4",
 			},
-			expected: 	1,
+			expected: 	intPtr(1),
 		},
 		{
 			name:		"no season",
@@ -319,7 +322,7 @@ func TestExtractSeason(t *testing.T) {
 				"1080P",
 				"MP4",
 			},
-			expected: 	-1,
+			expected: 	nil,
 		},
 	}
 
@@ -327,8 +330,8 @@ func TestExtractSeason(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			season := extractSeason(test.input)
 
-			if season != test.expected {
-				t.Errorf("extractSeason = %v, want %v", season, test.expected)
+			if !reflect.DeepEqual(season, test.expected) {
+    			t.Errorf("extractSeason = %v, want %v", season, test.expected)
 			}
 		})
 	}
@@ -338,7 +341,7 @@ func TestExtractEpisode(t *testing.T) {
 	tests := []struct{
 		name		string
 		input		[]string
-		expected	int
+		expected	*int
 	}{
 		{
 			name:		"ep without number",
@@ -351,7 +354,7 @@ func TestExtractEpisode(t *testing.T) {
 				"1080P",
 				"MP4",
 			},
-			expected: 	0,
+			expected: 	intPtr(0),
 		},
 		{
 			name:		"ep with number",
@@ -364,7 +367,7 @@ func TestExtractEpisode(t *testing.T) {
 				"1080P",
 				"MP4",
 			},
-			expected: 	1,
+			expected: 	intPtr(1),
 		},
 		{
 			name:		"no ep",
@@ -376,16 +379,16 @@ func TestExtractEpisode(t *testing.T) {
 				"1080P",
 				"MP4",
 			},
-			expected: 	-1,
+			expected: 	nil,
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			season := extractEpisode(test.input)
+			ep := extractEpisode(test.input)
 
-			if season != test.expected {
-				t.Errorf("extractEpisode = %v, want %v", season, test.expected)
+			if !reflect.DeepEqual(ep, test.expected) {
+    			t.Errorf("extractEpisode = %v, want %v", ep, test.expected)
 			}
 		})
 	}
@@ -765,30 +768,30 @@ func TestParseYear(t *testing.T) {
 	tests := []struct {
 		name			string
 		input			string
-		expectedValue	int
+		expectedValue	*int
 	}{
 		{
 			name:			"valid year",		
 			input:			"2000",
-			expectedValue:	2000,
+			expectedValue:	intPtr(2000),
 		},
 		{
 			name:			"too early year",			
 			input: 			"1900",
-			expectedValue: 	-1,
+			expectedValue: 	nil,
 		},
 		{
 			name:			"too late year",		
 			input: 			"3000",
-			expectedValue: 	-1,
+			expectedValue: 	nil,
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			year := parseYear(test.input)
-			if year != test.expectedValue {
-				t.Errorf("parseYear = %v, want %v", year, test.expectedValue)
+			if !reflect.DeepEqual(year, test.expectedValue) {
+    			t.Errorf("parseYear = %v, want %v", year, test.expectedValue)
 			}
 		})
 	}
@@ -798,7 +801,7 @@ func TestParseSeason(t *testing.T) {
 	tests := []struct {
 		name			string
 		input			[]string
-		expected		int
+		expected		*int
 	}{
 		{
 			name:		"valid season with number",
@@ -808,7 +811,7 @@ func TestParseSeason(t *testing.T) {
 				"X265",
 				"MP4",
 			},
-			expected: 4,
+			expected: intPtr(4),
 		},
 		{
 			name:		"valid season without number",
@@ -818,7 +821,7 @@ func TestParseSeason(t *testing.T) {
 				"X265",
 				"MP4",
 			},
-			expected: 0,
+			expected: intPtr(0),
 		},
 		{
 			name:		"invalid season",
@@ -828,7 +831,7 @@ func TestParseSeason(t *testing.T) {
 				"X265",
 				"MP4",
 			},
-			expected: -1,
+			expected: nil,
 		},
 		{
 			name:		"season at second segment",
@@ -839,15 +842,15 @@ func TestParseSeason(t *testing.T) {
 				"X265",
 				"MP4",
 			},
-			expected: -1,
+			expected: nil,
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			season := parseSeason(test.input)
-			if season != test.expected {
-				t.Errorf("parseSeason = %v, want %v", season, test.expected)
+			if !reflect.DeepEqual(season, test.expected) {
+    			t.Errorf("parseSeason = %v, want %v", season, test.expected)
 			}
 		})
 	}
@@ -857,7 +860,7 @@ func TestParseEpisode(t *testing.T) {
 	tests := []struct {
 		name			string
 		input			[]string
-		expected		int
+		expected		*int
 	}{
 		{
 			name:		"valid episode with number",
@@ -867,7 +870,7 @@ func TestParseEpisode(t *testing.T) {
 				"X265",
 				"MP4",
 			},
-			expected: 4,
+			expected: intPtr(4),
 		},
 		{
 			name:		"valid episode without number",
@@ -877,7 +880,7 @@ func TestParseEpisode(t *testing.T) {
 				"X265",
 				"MP4",
 			},
-			expected: 0,
+			expected: intPtr(0),
 		},
 		{
 			name:		"invalid episode",
@@ -887,7 +890,7 @@ func TestParseEpisode(t *testing.T) {
 				"X265",
 				"MP4",
 			},
-			expected: -1,
+			expected: nil,
 		},
 		{
 			name:		"episode at second segment",
@@ -898,15 +901,15 @@ func TestParseEpisode(t *testing.T) {
 				"X265",
 				"MP4",
 			},
-			expected: -1,
+			expected: nil,
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			ep := parseEpisode(test.input)
-			if ep != test.expected {
-				t.Errorf("parseEpisode = %v, want %v", ep, test.expected)
+			if !reflect.DeepEqual(ep, test.expected) {
+    			t.Errorf("parseEpisode = %v, want %v", ep, test.expected)
 			}
 		})
 	}
