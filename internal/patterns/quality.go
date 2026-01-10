@@ -12,17 +12,17 @@ var ResolutionPatternGroups = []PatternGroup{
 	// Matches 2K, 1440, 1440P, 1440I, 2560X1440, QHD, WQHD
 	{Key: `2K`, Patterns: []Pattern{`2K`, `1440[PI]?`, `2560X1440`, `QHD`, `WQHD`}},
 	// Matches 1080, 1080P, 1080I, FHD, 1920X1080, FULLHD
-	{Key: `1080p`, Patterns: []Pattern{`1080[PI]?`, `FHD`, `1920X1080`, `FULLHD`}},
+	{Key: `1080P`, Patterns: []Pattern{`1080[PI]?`, `FHD`, `1920X1080`, `FULLHD`}},
 	// Matches 720, 720P, 720I, 1280X720
-	{Key: `720p`, Patterns: []Pattern{`720[PI]?`, `1280X720`}},
+	{Key: `720P`, Patterns: []Pattern{`720[PI]?`, `1280X720`}},
 	// Matches 576, 576P, 576I, PAL
-	{Key: `576p`, Patterns: []Pattern{`576[PI]?`, `PAL`}},
+	{Key: `576P`, Patterns: []Pattern{`576[PI]?`, `PAL`}},
 	// Matches 480, 480P, 480I, NTSC
-	{Key: `480p`, Patterns: []Pattern{`480[PI]?`, `NTSC`}},
+	{Key: `480P`, Patterns: []Pattern{`480[PI]?`, `NTSC`}},
 	// Matches 360, 360P, 360I
-	{Key: `360p`, Patterns: []Pattern{`360[PI]?`}},
+	{Key: `360P`, Patterns: []Pattern{`360[PI]?`}},
 	// Matches 240, 240P, 240I
-	{Key: `240p`, Patterns: []Pattern{`240[PI]?`}},
+	{Key: `240P`, Patterns: []Pattern{`240[PI]?`}},
 }
 
 var CodecPatternGroups = []PatternGroup{
@@ -33,11 +33,11 @@ var CodecPatternGroups = []PatternGroup{
 	// Matches VP8
 	{Key: `VP8`, Patterns: []Pattern{`VP8`}},
 	// Matches x265, X265, X.265, H265, H.265, HEVC, HEVC10, HEVC10BIT
-	{Key: `x265`, Patterns: []Pattern{`X265`, `X\.265`, `H265`, `H\.265`, `HEVC`, `HEVC10`, `HEVC10BIT`, `H265P`}},
+	{Key: `X265`, Patterns: []Pattern{`X265`, `X\.265`, `H265`, `H\.265`, `HEVC`, `HEVC10`, `HEVC10BIT`, `H265P`}},
 	// Matches x264, X264, X.264, H264, H.264, AVC, AVC1
-	{Key: `x264`, Patterns: []Pattern{`X264`, `X\.264`, `H264`, `H\.264`, `AVC`, `AVC1`, `H264P`}},
+	{Key: `X264`, Patterns: []Pattern{`X264`, `X\.264`, `H264`, `H\.264`, `AVC`, `AVC1`, `H264P`}},
 	// Matches x263, X263, X.263, H263, H.263
-	{Key: `x263`, Patterns: []Pattern{`X263`, `X\.263`, `H263`, `H\.263`}},
+	{Key: `X263`, Patterns: []Pattern{`X263`, `X\.263`, `H263`, `H\.263`}},
 	// Matches XVID, XVID-AF
 	{Key: `XVID`, Patterns: []Pattern{`XVID`, `XVID\.AF`}},
 	// Matches DIVX, DIV3, DIVX6
@@ -55,24 +55,23 @@ var CodecPatternGroups = []PatternGroup{
 	// Matches PRORES, PRORES422, PRORES4444
 	{Key: `PRORES`, Patterns: []Pattern{`PRORES`, `PRORES422`, `PRORES4444`, `PRORES422HQ`}},
 	// Matches DNxHD, DNXHD, DNxHR, DNXHR
-	{Key: `DNxHD`, Patterns: []Pattern{`DNXHD`, `DNXHR`}},
+	{Key: `DNXHD`, Patterns: []Pattern{`DNXHD`, `DNXHR`}},
 }
-
 var SourcePatternGroups = []PatternGroup{
 	// Matches REMUX
 	{Key: `REMUX`, Patterns: []Pattern{`REMUX`}},
 	// Matches BluRay variants
-	{Key: `BluRay`, Patterns: []Pattern{`BLURAY`, `BDRIP`, `BD\.RIP`, `BR\.RIP`, `BRRIP`, `BDMV`, `BDISO`, `BD25`, `BD50`, `BD66`, `BD100`}},
+	{Key: `BLURAY`, Patterns: []Pattern{`BLURAY`, `BDRIP`, `BD\.RIP`, `BR\.RIP`, `BRRIP`, `BDMV`, `BDISO`, `BD25`, `BD50`, `BD66`, `BD100`}},
 	// Matches WEB-DL, WEBDL, WEB DL
 	{Key: `WEB-DL`, Patterns: []Pattern{`WEB\.DL`, `WEBDL`}},
 	// Matches WEBRip, WEB-RIP, WEBRIP, WEB RIP
-	{Key: `WEBRip`, Patterns: []Pattern{`WEBRIP`, `WEB-RIP`, `WEB\.RIP`}},
+	{Key: `WEBRIP`, Patterns: []Pattern{`WEBRIP`, `WEB-RIP`, `WEB\.RIP`}},
 	// Matches WEB (but not WEB-DL or WEBRip)
 	{Key: `WEB`, Patterns: []Pattern{`WEB`}},
 	// Matches HDRip, HD-RIP, HDRIP, HD RIP
-	{Key: `HDRip`, Patterns: []Pattern{`HDRIP`, `HD\.RIP`}},
+	{Key: `HDRIP`, Patterns: []Pattern{`HDRIP`, `HD\.RIP`}},
 	// Matches DVDRip, DVD-RIP, DVDRIP, DVD RIP
-	{Key: `DVDRip`, Patterns: []Pattern{`DVDRIP`, `DVD\.RIP`}},
+	{Key: `DVDRIP`, Patterns: []Pattern{`DVDRIP`, `DVD\.RIP`}},
 	// Matches DVD, DVDSCR, DVD5, DVD9
 	{Key: `DVD`, Patterns: []Pattern{`DVD`, `DVDSCR`, `DVD5`, `DVD9`}},
 	// Matches HDTV, HDTVRIP, DTTV, PDTV, SDTV, LDTV
@@ -90,7 +89,7 @@ var SourcePatternGroups = []PatternGroup{
 	// Matches PPV, PPVRIP
 	{Key: `PPV`, Patterns: []Pattern{`PPV`, `PPVRIP`}},
 	// Matches VODRIP, VOD
-	{Key: `VODRip`, Patterns: []Pattern{`VODRIP`, `VOD`}},
+	{Key: `VODRIP`, Patterns: []Pattern{`VODRIP`, `VOD`}},
 	// Matches HC, HCHDCAM
 	{Key: `HC`, Patterns: []Pattern{`HC`, `HCHDCAM`}},
 	// Matches LINE
@@ -100,12 +99,12 @@ var SourcePatternGroups = []PatternGroup{
 	// Matches HDTC, HD-TC, HDTC
 	{Key: `HDTC`, Patterns: []Pattern{`HDTC`, `HD\.TC`}},
 	// Matches TVRIP, SATRIP, DTTVRIP
-	{Key: `TVRip`, Patterns: []Pattern{`TVRIP`, `SATRIP`, `DTTVRIP`}},
+	{Key: `TVRIP`, Patterns: []Pattern{`TVRIP`, `SATRIP`, `DTTVRIP`}},
 }
 
 var AudioPatternGroups = []PatternGroup{
 	// Matches ATMOS, DOLBY-ATMOS, DOLBY ATMOS, DOLBYATMOS
-	{Key: `Atmos`, Patterns: []Pattern{`ATMOS`, `DOLBY-ATMOS`, `DOLBY\.ATMOS`, `DOLBYATMOS`}},
+	{Key: `ATMOS`, Patterns: []Pattern{`ATMOS`, `DOLBY-ATMOS`, `DOLBY\.ATMOS`, `DOLBYATMOS`}},
 	// Matches DTS-X, DTSX, DTS X
 	{Key: `DTS-X`, Patterns: []Pattern{`DTSX`, `DTS\.X`, `DTS`}},
 	// Matches DTS-HD-MA, DTS-HD, DTSHD-MA, DTSHD
@@ -117,7 +116,7 @@ var AudioPatternGroups = []PatternGroup{
 	// Matches DTS (standalone, not part of other DTS variants)
 	{Key: `DTS`, Patterns: []Pattern{`DTS`}},
 	// Matches TrueHD, TRUE-HD, TRUEHD, TRUE HD
-	{Key: `TrueHD`, Patterns: []Pattern{`TRUEHD`, `TRUE\.HD`}},
+	{Key: `TRUEHD`, Patterns: []Pattern{`TRUEHD`, `TRUE\.HD`}},
 	// Matches DD+, DDP, E-AC-3, EAC3, DD-PLUS, DDPLUS
 	{Key: `DD+`, Patterns: []Pattern{`DDP`, `E\.AC\.3`, `EAC3`, `DD\.PLUS`, `DDPLUS`}},
 	// Matches DD, AC3, DOLBY-DIGITAL, DOLBY DIGITAL (but not DD+ or variants)

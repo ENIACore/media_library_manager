@@ -30,10 +30,10 @@ func TestExtractMedia(t *testing.T) {
 				Year: intPtr(2025),
 				Season: intPtr(1),
 				Episode: intPtr(1),
-				Resolution: "1080p",
-				Codec: "x265",
-				Source: "BluRay",
-				Audio: "Atmos",
+				Resolution: "1080P",
+				Codec: "X265",
+				Source: "BLURAY",
+				Audio: "ATMOS",
 				Language: "ENGLISH",
 			},
 		},
@@ -408,7 +408,7 @@ func TestExtractResolution(t *testing.T) {
 				"1080P",
 				"MP4",
 			},
-			expected:	"1080p",
+			expected:	"1080P",
 		},
 		{
 			name:		"no resolution",
@@ -445,7 +445,7 @@ func TestExtractCodec(t *testing.T) {
 				"X265",
 				"MP4",
 			},
-			expected:	"x265",
+			expected:	"X265",
 		},
 		{
 			name:		"no codec",
@@ -483,7 +483,7 @@ func TestExtractSource(t *testing.T) {
 				"RIP",
 				"MP4",
 			},
-			expected:	"BluRay",
+			expected:	"BLURAY",
 		},
 		{
 			name:		"no source",
@@ -521,7 +521,7 @@ func TestExtractAudio(t *testing.T) {
 				"ATMOS",
 				"MP4",
 			},
-			expected:	"Atmos",
+			expected:	"ATMOS",
 		},
 		{
 			name:		"no audio",
@@ -677,7 +677,7 @@ func TestParseSource(t *testing.T) {
 			input:		[]string{
 				"BLURAY",
 			},
-			expected:	"BluRay",
+			expected:	"BLURAY",
 		},
 		{
 			name:		"source with seperators",
@@ -685,7 +685,7 @@ func TestParseSource(t *testing.T) {
 				"BD",
 				"RIP",
 			},
-			expected:	"BluRay",
+			expected:	"BLURAY",
 		},
 		{
 			name:		"invalid source with seperators",
