@@ -5,6 +5,23 @@ import (
 )
 
 
+func isMovieFile(entry *parser.Entry) bool {
+	return false
+}
+
+func isEpisodeFile(entry *parser.Entry) bool {
+	return false
+}
+
+func isSubtitleFile(entry *parser.Entry) bool {
+	return false
+}
+
+func isBonusFile(entry *parser.Entry) bool {
+	return false
+}
+
+/*
 func isSubtitleDir(entry *parser.Entry) bool {
 	return false
 }
@@ -24,6 +41,7 @@ func isSeasonDir(entry *parser.Entry) bool {
 func isSeriesDir(entry *parser.Entry) bool {
 	return false
 }
+*/
 
 // Structure of media torrents
 /*
