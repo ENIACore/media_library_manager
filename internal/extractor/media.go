@@ -33,6 +33,7 @@ func ExtractMedia(path string, logger *slog.Logger) metadata.MediaInfo {
 	mediaInfo.Source = extractSource(sanitizedName)
 	mediaInfo.Audio = extractAudio(sanitizedName)
 	mediaInfo.Language = extractLanguage(sanitizedName)
+	mediaInfo.Bonus = extractBonus(sanitizedName)
 	log.Debug("successfully extracted media info", "media-info", fmt.Sprintf("%+v", mediaInfo))
 
 	return mediaInfo
@@ -58,8 +59,9 @@ func extractTitle(segments []string) []string {
 			parseEpisode(candidates) != nil 	||
 			parseVideoExt(candidates) != "" 	||
 			parseSubtitleExt(candidates) != "" 	||
-			parseMisc(candidates) != "" 	||
-			parseAudioExt(candidates) != "" {
+			parseMisc(candidates) != "" 		||
+			parseAudioExt(candidates) != ""		||
+			parseBonus(candidates) != "" {
 			break
 		}
 
@@ -95,8 +97,9 @@ func extractYear(segments []string) *int {
 			parseEpisode(candidates) != nil 	||
 			parseVideoExt(candidates) != "" 	||
 			parseSubtitleExt(candidates) != "" 	||
-			parseMisc(candidates) != "" 	||
-			parseAudioExt(candidates) != "" {
+			parseMisc(candidates) != "" 		||
+			parseAudioExt(candidates) != ""		||
+			parseBonus(candidates) != "" {
 			return year
 		}
 		year = parseYear(segment)
@@ -182,6 +185,16 @@ func extractLanguage(segments []string) string {
 		candidates := segments[i:]
 		if language := parseLanguage(candidates); language != "" {
 			return language
+		}
+	}
+	return ""
+}
+
+func extractBonus(segments []string) string {
+	for i := range segments {
+		candidates := segments[i:]
+		if bonus := parseBonus(candidates); bonus != "" {
+			return bonus
 		}
 	}
 	return ""
@@ -316,6 +329,18 @@ func parseMisc(segments []string) string {
 	for _, re := range patterns.GetMiscPatterns() {
 		if match := matchSegments(segments, (*regexp.Regexp)(re)); match != nil {
 			return match[0]
+		}
+	}
+	return ""
+}
+
+func parseBonus(segments []string) string {
+	for _, group := range patterns.GetBonusPatternGroups() {
+		for _, re := range group.Patterns {
+			match := matchSegments(segments, (*regexp.Regexp)(re)) 
+			if match != nil {
+				return group.Key
+			}
 		}
 	}
 	return ""

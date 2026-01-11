@@ -30,7 +30,7 @@ var movieFile = parser.Entry{
 	},
 	PathInfo: metadata.PathInfo{
 		Dest: "",
-		Source: "/dir/test movie 2025 1080p.x264.remux.atmos.english.mp4",
+		Source: "/test movie 2025 1080p.x264.remux.atmos.english.mp4",
 		Ext: "MP4",	
 		Type: metadata.Video,
 	},
@@ -44,6 +44,53 @@ var episodeFile = parser.Entry{
 			"EPISODE",
 		},
 		Year:		intPtr(2025),
+		Episode:	intPtr(1),
+		Season:		intPtr(1),
+		Resolution:	"1080p",
+		Codec:		"x264",
+		Source:		"REMUX",
+		Audio:		"Atmos",
+		Language:	"ENGLISH",
+	},
+	PathInfo: metadata.PathInfo{
+		Dest: "",
+		Source: "/test episode S1E1 2025 1080p.x264.remux.atmos.english.mp4",
+		Ext: "MP4",	
+		Type: metadata.Video,
+	},
+}
+var subtitleFile = parser.Entry{
+	Parent: nil,
+	Children: nil,
+	MediaInfo: metadata.MediaInfo{
+		Title:		[]string{
+			"SUBTITLE",
+		},
+		Year:		nil,
+		Episode:	nil,
+		Season:		nil,
+		Resolution:	"",
+		Codec:		"",
+		Source:		"",
+		Audio:		"",
+		Language:	"ENGLISH",
+	},
+	PathInfo: metadata.PathInfo{
+		Dest: "",
+		Source: "/subtitle english.srt",
+		Ext: "SRT",	
+		Type: metadata.Subtitle,
+	},
+}
+var bonusFile = parser.Entry{
+	Parent: nil,
+	Children: nil,
+	MediaInfo: metadata.MediaInfo{
+		Title:		[]string{
+			"TEST",
+			"BONUS",
+		},
+		Year:		intPtr(2025),
 		Episode:	nil,
 		Season:		nil,
 		Resolution:	"1080p",
@@ -54,33 +101,9 @@ var episodeFile = parser.Entry{
 	},
 	PathInfo: metadata.PathInfo{
 		Dest: "",
-		Source: "/dir/test movie 2025 1080p.x264.remux.atmos.english.mp4",
+		Source: "/test bonus 2025 1080p.x264.remux.atmos.english.mp4",
 		Ext: "MP4",	
 		Type: metadata.Video,
-	},
-}
-var subtitleFile = parser.Entry{
-	Parent: nil,
-	Children: nil,
-	MediaInfo: metadata.MediaInfo{
-		Title:		[]string{
-			"TEST",
-			"MOVIE",
-		},
-		Year:		nil,
-		Episode:	nil,
-		Season:		nil,
-		Resolution:	"",
-		Codec:		"",
-		Source:		"",
-		Audio:		"",
-		Language:	"",
-	},
-	PathInfo: metadata.PathInfo{
-		Dest: "",
-		Source: "/dir/subtitles/subtitle english.srt",
-		Ext: "SRT",	
-		Type: metadata.Subtitle,
 	},
 }
 
