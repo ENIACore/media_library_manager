@@ -18,7 +18,7 @@ type PathInfo struct {
     Dest	string
     Source	string
 
-	//IsDir	bool
     Ext		string      // "" if no ext
     Type	ContentType // Unkown if directory or no ext
+	IsDir	bool
 }

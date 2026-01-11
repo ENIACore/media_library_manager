@@ -13,12 +13,17 @@ import (
 func ExtractPath(path string, logger *slog.Logger) metadata.PathInfo {
 	log := logger.With("func", "ExtractPath")
 	log.Info("extracting path info from path", "path", path)
+
 	filename := filepath.Base(path)	
 	sanitizedName := strings.Split(sanitizeName(filename), ".")
 
 	pathInfo := metadata.PathInfo{}
 	pathInfo.Source = path
 	pathInfo.Type, pathInfo.Ext = extractType(sanitizedName)
+	if pathInfo.Ext == "" && pathInfo.Type == metadata.Unknown {
+		pathInfo.IsDir = true
+	}
+
 	log.Debug("successfully extracted path info", "path-info", fmt.Sprintf("%+v", pathInfo))
 	
 
