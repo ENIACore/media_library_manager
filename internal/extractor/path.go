@@ -25,8 +25,6 @@ func ExtractPath(path string, logger *slog.Logger) metadata.PathInfo {
 	}
 
 	log.Debug("successfully extracted path info", "path-info", fmt.Sprintf("%+v", pathInfo))
-	
-
 	return pathInfo
 }
 

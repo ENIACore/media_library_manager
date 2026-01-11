@@ -13,12 +13,13 @@ import (
 type Entry struct {
 	Parent		*Entry
 	Children	[]*Entry
+	Depth		int			// Root level entry should be Depth 0
 
 	metadata.MediaInfo
 	metadata.PathInfo
 }
 
-func ParseTree(path string, parent *Entry, logger *slog.Logger) (*Entry, error) {
+func ParseTree(path string, parent *Entry, depth int, logger *slog.Logger) (*Entry, error) {
 
     info, err := os.Stat(path)
     if err != nil {
@@ -27,6 +28,7 @@ func ParseTree(path string, parent *Entry, logger *slog.Logger) (*Entry, error) 
 
     node := &Entry{
         Parent:		parent,
+		Depth:		depth,
 		MediaInfo: extractor.ExtractMedia(path, logger),
 		PathInfo: extractor.ExtractPath(path, logger),
     }
@@ -42,7 +44,7 @@ func ParseTree(path string, parent *Entry, logger *slog.Logger) (*Entry, error) 
 	children := make([]*Entry, 0, len(entries))
 	for _, entry := range entries {
 		childPath := filepath.Join(path, entry.Name())
-		child, err := ParseTree(childPath, node, logger)
+		child, err := ParseTree(childPath, node, depth + 1, logger)
 		if err != nil {
 			return nil, err
 		}

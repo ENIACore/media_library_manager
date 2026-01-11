@@ -12,7 +12,7 @@ func TestParseTree(t *testing.T) {
 	tmp := createDummyLibrary(t)
 	logger := slog.Default()
 
-	root, err := ParseTree(tmp, nil, logger)
+	root, err := ParseTree(tmp, nil, 0, logger)
 	if err != nil {
 		t.Errorf("ParseTree returns error %v", err)
 	}
@@ -30,12 +30,22 @@ func TestParseTree(t *testing.T) {
 		t.Errorf("Expected depth of 2 for tempdir/dir/file.txt, got %v", depth) 
 	}
 
+	depth = root.Children[0].Children[0].Depth
+	if depth != 2 {
+		t.Errorf("Expected calculated Depth for tempdir/dir/file.txt by ParseTree = %v, got %v", 2, depth) 
+	}
+
 	depth = getDepth(root.Children[1], 1)
 	if depth != 4 {
 		t.Errorf("Expected depth of 4 for tempdir/parent/child/subchild/file.txt, got %v", depth) 
 	}
 
-	_, err = ParseTree("/nonexistent/path", nil, slog.Default())
+	depth = root.Children[1].Children[0].Children[0].Children[0].Depth
+	if depth != 4 {
+		t.Errorf("Expected calculated Depth for tempdir/parent/child/subchild/file.txt by ParseTree = %v, got %v", 4, depth) 
+	}
+
+	_, err = ParseTree("/nonexistent/path", nil, 0, slog.Default())
     if err == nil {
         t.Error("expected error for nonexistent path")
     }
