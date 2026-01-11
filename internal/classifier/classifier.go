@@ -4,25 +4,20 @@ import (
 	"github.com/ENIACore/media_library_manager/internal/metadata"
 )
 
-func isMovieFile(entry *metadata.Entry) bool {
-	return false
-}
-
-func isEpisodeFile(entry *metadata.Entry) bool {
-	return false
-}
-
-func isSubtitleFile(entry *metadata.Entry) bool {
-	return false
-}
-
-func isBonusFile(entry *metadata.Entry) bool {
-	return false
-}
-
-/*
 func isSubtitleDir(entry *metadata.Entry) bool {
-	return false
+	// Subtitle directory cannot have nested directories
+	if entry.Height() > 1 {
+		return false;
+	}
+
+	// All files in subtitle directory should be of type subtitle
+	for _, child := range entry.Children {
+		if child.Type != metadata.Subtitle {
+			return false;
+		}
+	}
+
+	return true
 }
 
 func isBonusDir(entry *metadata.Entry) bool {
@@ -40,7 +35,6 @@ func isSeasonDir(entry *metadata.Entry) bool {
 func isSeriesDir(entry *metadata.Entry) bool {
 	return false
 }
-*/
 
 // Structure of media torrents
 /*

@@ -117,6 +117,32 @@ Series Directory
 └── Subtitle Directory (optional)
 */
 func TestIsSubtitleDir(t *testing.T) {
+
+	movieFile := metadata.Entry{
+		Parent: nil,
+		Children: nil,
+		MediaInfo: metadata.MediaInfo{
+			Title:		[]string{
+				"TEST",
+				"MOVIE",
+			},
+			Year:		intPtr(2025),
+			Episode:	nil,
+			Season:		nil,
+			Resolution:	"1080p",
+			Codec:		"x264",
+			Source:		"REMUX",
+			Audio:		"Atmos",
+			Language:	"ENGLISH",
+		},
+		PathInfo: metadata.PathInfo{
+			Dest: "",
+			Source: "/test movie 2025 1080p.x264.remux.atmos.english.mp4",
+			Ext: "MP4",	
+			Type: metadata.Video,
+		},
+	}
+
 	subtitleFile := metadata.Entry{
 		Parent: nil,
 		Children: nil,
@@ -135,7 +161,7 @@ func TestIsSubtitleDir(t *testing.T) {
 		},
 		PathInfo: metadata.PathInfo{
 			Dest: "",
-			Source: "/subtitle english.srt",
+			Source: "/test movie/subtitles/subtitle english.srt",
 			Ext: "SRT",	
 			Type: metadata.Subtitle,
 		},
@@ -150,7 +176,23 @@ func TestIsSubtitleDir(t *testing.T) {
 		},	
 		PathInfo: metadata.PathInfo{
 			Dest: "",
-			Source: "/subtitles",
+			Source: "/test movie/subtitles",
+			Ext: "",	
+			Type: metadata.Unknown,
+		},
+	}
+	
+	invalidSubtitleDir := metadata.Entry{
+		Parent: nil,
+		Children: []*metadata.Entry{
+			&subtitleFile,
+			&subtitleFile,
+			&subtitleFile,
+			&movieFile,
+		},	
+		PathInfo: metadata.PathInfo{
+			Dest: "",
+			Source: "/test movie/subtitles",
 			Ext: "",	
 			Type: metadata.Unknown,
 		},
@@ -159,13 +201,25 @@ func TestIsSubtitleDir(t *testing.T) {
 	tests := []struct{
 		name		string
 		node		metadata.Entry
+		expected	bool
 	}{
 		{
-			name:		"valid subtitle directory", node:		validSubtitleDir,
+			name:		"valid subtitle directory", 
+			node:		validSubtitleDir,
+			expected:	true,
+		},
+		{
+			name:		"invalid subtitle directory", 
+			node:		invalidSubtitleDir,
+			expected:	false,
 		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
+			res := isSubtitleDir(&test.node)
+			if res != test.expected {
+				t.Errorf("isSubtitleDir = %v, want %v", res, test.expected)
+			}
 		})
 	}
 }
