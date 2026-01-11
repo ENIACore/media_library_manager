@@ -1,44 +1,43 @@
 package classifier
 
 import (
-	"github.com/ENIACore/media_library_manager/internal/parser"
+	"github.com/ENIACore/media_library_manager/internal/metadata"
 )
 
-
-func isMovieFile(entry *parser.Entry) bool {
+func isMovieFile(entry *metadata.Entry) bool {
 	return false
 }
 
-func isEpisodeFile(entry *parser.Entry) bool {
+func isEpisodeFile(entry *metadata.Entry) bool {
 	return false
 }
 
-func isSubtitleFile(entry *parser.Entry) bool {
+func isSubtitleFile(entry *metadata.Entry) bool {
 	return false
 }
 
-func isBonusFile(entry *parser.Entry) bool {
+func isBonusFile(entry *metadata.Entry) bool {
 	return false
 }
 
 /*
-func isSubtitleDir(entry *parser.Entry) bool {
+func isSubtitleDir(entry *metadata.Entry) bool {
 	return false
 }
 
-func isBonusDir(entry *parser.Entry) bool {
+func isBonusDir(entry *metadata.Entry) bool {
 	return false
 }
 
-func isMovieDir(entry *parser.Entry) bool {
+func isMovieDir(entry *metadata.Entry) bool {
 	return false
 }
 
-func isSeasonDir(entry *parser.Entry) bool {
+func isSeasonDir(entry *metadata.Entry) bool {
 	return false
 }
 
-func isSeriesDir(entry *parser.Entry) bool {
+func isSeriesDir(entry *metadata.Entry) bool {
 	return false
 }
 */

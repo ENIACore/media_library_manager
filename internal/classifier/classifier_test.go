@@ -4,14 +4,14 @@ import (
 	"testing"
 
 	"github.com/ENIACore/media_library_manager/internal/metadata"
-	"github.com/ENIACore/media_library_manager/internal/parser"
 )
 
 func intPtr(i int) *int {
 	return &i
 }
 
-var movieFile = parser.Entry{
+/*
+var movieFile = metadata.Entry{
 	Parent: nil,
 	Children: nil,
 	MediaInfo: metadata.MediaInfo{
@@ -35,7 +35,7 @@ var movieFile = parser.Entry{
 		Type: metadata.Video,
 	},
 }
-var episodeFile = parser.Entry{
+var episodeFile = metadata.Entry{
 	Parent: nil,
 	Children: nil,
 	MediaInfo: metadata.MediaInfo{
@@ -59,30 +59,7 @@ var episodeFile = parser.Entry{
 		Type: metadata.Video,
 	},
 }
-var subtitleFile = parser.Entry{
-	Parent: nil,
-	Children: nil,
-	MediaInfo: metadata.MediaInfo{
-		Title:		[]string{
-			"SUBTITLE",
-		},
-		Year:		nil,
-		Episode:	nil,
-		Season:		nil,
-		Resolution:	"",
-		Codec:		"",
-		Source:		"",
-		Audio:		"",
-		Language:	"ENGLISH",
-	},
-	PathInfo: metadata.PathInfo{
-		Dest: "",
-		Source: "/subtitle english.srt",
-		Ext: "SRT",	
-		Type: metadata.Subtitle,
-	},
-}
-var bonusFile = parser.Entry{
+var bonusFile = metadata.Entry{
 	Parent: nil,
 	Children: nil,
 	MediaInfo: metadata.MediaInfo{
@@ -106,6 +83,7 @@ var bonusFile = parser.Entry{
 		Type: metadata.Video,
 	},
 }
+*/
 
 // Structure of media torrents
 /*
@@ -138,158 +116,41 @@ Series Directory
 ├── Bonus Directory (optional)
 └── Subtitle Directory (optional)
 */
-
-
-func TestIsMovieFile(t *testing.T) {
-	tests := []struct{
-		name		string
-		entry		*parser.Entry
-		expected	bool
-	}{
-		{
-			name:		"movie file",
-			entry:		nil,
-			expected:	false,
-		},
-		{
-			name:		"episode file",
-			entry:		nil,
-			expected:	false,
-		},
-		{
-			name:		"subtitle file",
-			entry:		nil,
-			expected:	false,
-		},
-		{
-			name:		"bonus file",
-			entry:		nil,
-			expected:	false,
-		},
-	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-
-		})
-	}
-}
-
-func TestIsEpisodeFile(t *testing.T) {
-	tests := []struct{
-		name		string
-		entry		*parser.Entry
-		expected	bool
-	}{
-		{
-			name:		"movie file",
-			entry:		nil,
-			expected:	false,
-		},
-		{
-			name:		"episode file",
-			entry:		nil,
-			expected:	false,
-		},
-		{
-			name:		"subtitle file",
-			entry:		nil,
-			expected:	false,
-		},
-		{
-			name:		"bonus file",
-			entry:		nil,
-			expected:	false,
-		},
-	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-
-		})
-	}
-}
-
-func TestIsSubtitleFile(t *testing.T) {
-	tests := []struct{
-		name		string
-		entry		*parser.Entry
-		expected	bool
-	}{
-		{
-			name:		"movie file",
-			entry:		nil,
-			expected:	false,
-		},
-		{
-			name:		"episode file",
-			entry:		nil,
-			expected:	false,
-		},
-		{
-			name:		"subtitle file",
-			entry:		nil,
-			expected:	false,
-		},
-		{
-			name:		"bonus file",
-			entry:		nil,
-			expected:	false,
-		},
-	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-
-		})
-	}
-}
-
-func TestIsBonusFile(t *testing.T) {
-	tests := []struct{
-		name		string
-		entry		*parser.Entry
-		expected	bool
-	}{
-		{
-			name:		"movie file",
-			entry:		nil,
-			expected:	false,
-		},
-		{
-			name:		"episode file",
-			entry:		nil,
-			expected:	false,
-		},
-		{
-			name:		"subtitle file",
-			entry:		nil,
-			expected:	false,
-		},
-		{
-			name:		"bonus file",
-			entry:		nil,
-			expected:	false,
-		},
-	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-
-		})
-	}
-}
-
-
-/*
 func TestIsSubtitleDir(t *testing.T) {
-
-	validSubtitleDir := parser.Entry{
+	subtitleFile := metadata.Entry{
 		Parent: nil,
-		Children: []*parser.Entry{
+		Children: nil,
+		MediaInfo: metadata.MediaInfo{
+			Title:		[]string{
+				"SUBTITLE",
+			},
+			Year:		nil,
+			Episode:	nil,
+			Season:		nil,
+			Resolution:	"",
+			Codec:		"",
+			Source:		"",
+			Audio:		"",
+			Language:	"ENGLISH",
+		},
+		PathInfo: metadata.PathInfo{
+			Dest: "",
+			Source: "/subtitle english.srt",
+			Ext: "SRT",	
+			Type: metadata.Subtitle,
+		},
+	}
+
+	validSubtitleDir := metadata.Entry{
+		Parent: nil,
+		Children: []*metadata.Entry{
 			&subtitleFile,
 			&subtitleFile,
 			&subtitleFile,
 		},	
 		PathInfo: metadata.PathInfo{
 			Dest: "",
-			Source: "/dir/subtitles",
+			Source: "/subtitles",
 			Ext: "",	
 			Type: metadata.Unknown,
 		},
@@ -297,7 +158,7 @@ func TestIsSubtitleDir(t *testing.T) {
 
 	tests := []struct{
 		name		string
-		node		parser.Entry
+		node		metadata.Entry
 	}{
 		{
 			name:		"valid subtitle directory", node:		validSubtitleDir,
@@ -312,7 +173,7 @@ func TestIsSubtitleDir(t *testing.T) {
 func TestIsBonusDir(t *testing.T) {
 	tests := []struct{
 		name		string
-		node		parser.Entry
+		node		metadata.Entry
 	}{
 
 	}
@@ -325,7 +186,7 @@ func TestIsBonusDir(t *testing.T) {
 func TestIsMovieDir(t *testing.T) {
 	tests := []struct{
 		name		string
-		node		parser.Entry
+		node		metadata.Entry
 	}{
 
 	}
@@ -338,7 +199,7 @@ func TestIsMovieDir(t *testing.T) {
 func TestIsSeasonDir(t *testing.T) {
 	tests := []struct{
 		name		string
-		node		parser.Entry
+		node		metadata.Entry
 	}{
 
 	}
@@ -351,7 +212,7 @@ func TestIsSeasonDir(t *testing.T) {
 func TestIsSeriesDir(t *testing.T) {
 	tests := []struct{
 		name		string
-		node		parser.Entry
+		node		metadata.Entry
 	}{
 
 	}
@@ -360,4 +221,3 @@ func TestIsSeriesDir(t *testing.T) {
 		})
 	}
 }
-*/

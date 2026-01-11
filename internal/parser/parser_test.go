@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"log/slog"
+	"github.com/ENIACore/media_library_manager/internal/metadata"
 )
 
 
@@ -52,7 +53,7 @@ func TestParseTree(t *testing.T) {
 	
 }
 
-func getDepth(entry *Entry, depth int) int {
+func getDepth(entry *metadata.Entry, depth int) int {
 	if len(entry.Children) == 0 {
 		return depth	
 	}
