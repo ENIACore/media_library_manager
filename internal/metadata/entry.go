@@ -8,3 +8,15 @@ type Entry struct {
 	MediaInfo
 	PathInfo
 }
+
+func (entry *Entry) Height() int {
+	if entry.Children == nil {
+		return 0
+	}
+	
+	maxHeight := 0
+	for _, child := range entry.Children {
+		maxHeight = max(maxHeight, child.Height())	
+	}
+	return maxHeight + 1
+}
